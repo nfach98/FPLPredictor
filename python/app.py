@@ -3,7 +3,7 @@ import pandas as pd
 import pulp as p
 import json
 import random
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow import keras
@@ -28,14 +28,15 @@ def predict():
     return response
 
 
-@app.route('/facts/', methods=['GET'])
+@app.route('/informations/', methods=['GET'])
 def facts():
-    results = facts.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
+    results = (facts if request.args.get('type') == 'facts' else records).apply(lambda x: json.loads(x.to_json()),
+                                                                                axis=1).tolist()
     random.shuffle(results)
     response = make_response(
         jsonify(
             {
-                "facts": results
+                "data": results
             }
         ),
         200,
@@ -156,7 +157,8 @@ def selection():
     prob.solve()
     selected = [int(var.name) for var in prob.variables() if var.value() == 1]
     players = df[df["id_player"].isin(selected)]
-    players = players[["name", "web_name", "team", "position", "code", "now_cost", "shirt", "actual", "predicted 2021-22"]]
+    players = players[
+        ["name", "web_name", "team", "position", "code", "now_cost", "shirt", "actual", "predicted 2021-22"]]
     return players
 
 
@@ -168,6 +170,7 @@ if __name__ == '__main__':
     regex_exc = "loan|transfer|join|left|contract|retire"
 
     facts = pd.read_csv('dataset/facts.csv', sep=';')
+    records = pd.read_csv('dataset/records.csv', sep=';')
     aggregated = pd.read_csv('dataset/aggregated.csv')
     raw = pd.read_csv('dataset/player_raw.csv')
 
