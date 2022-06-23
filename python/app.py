@@ -75,6 +75,10 @@ def inverse_scale(dataset):
     return dataset * 10
 
 
+def inverse_difference(history, yhat, interval=1):
+	return yhat + history[-interval]
+
+
 def selection_summary(dataset):
     dataset = dataset.sort_values(by="predicted 2021-22", ascending=False)
     print("Max Predicted total:", sum(dataset['predicted 2021-22'].values[:-4]))
@@ -106,6 +110,7 @@ def prediction():
         yhat = model.predict(x_input, verbose=0)
         preds_scaled.append(yhat[0])
         yhat = inverse_scale(yhat[0])
+        yhat = inverse_difference(all, yhat, len(scaled_test)-i)
         preds.append(yhat[0])
 
     preds_t = np.array(preds).transpose()
