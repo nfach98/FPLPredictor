@@ -14,12 +14,15 @@ app = Flask(__name__)
 @app.route('/recommend/', methods=['GET'])
 def predict():
     prediction()
-    players = selection()
-    results = players.apply(lambda x: json.loads(x.to_json()), axis=1)
+    starting, sub = selection(1, 38)
+    results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1)
+    results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1)
     response = make_response(
         jsonify(
             {
-                "players": results.tolist()
+                "starting": results_starting.tolist(),
+                "sub": results_sub.tolist(),
+                "total_predicted": sum(starting['predicted'].values),
             }
         ),
         200,
@@ -30,13 +33,15 @@ def predict():
 
 @app.route('/informations/', methods=['GET'])
 def facts():
-    results = (facts if request.args.get('type') == 'facts' else records).apply(lambda x: json.loads(x.to_json()),
-                                                                                axis=1).tolist()
-    random.shuffle(results)
+    result_facts = facts.apply(lambda x: json.loads(x.to_json()),axis=1).tolist()
+    result_records = records.apply(lambda x: json.loads(x.to_json()),axis=1).tolist()
+    random.shuffle(result_facts)
+    random.shuffle(result_records)
     response = make_response(
         jsonify(
             {
-                "data": results
+                "facts": result_facts,
+                "records": result_records
             }
         ),
         200,
@@ -65,14 +70,12 @@ def get_sequences(name):
 
 
 def scale(dataset):
-    # scaler.fit(dataset)
-    # return scaler.transform(dataset)
-    return dataset / 10
+    scaler.fit(dataset)
+    return scaler.transform(dataset)
 
 
 def inverse_scale(dataset):
-    # return scaler.inverse_transform(dataset)
-    return dataset * 10
+    return scaler.inverse_transform(dataset)
 
 
 def inverse_difference(history, yhat, interval=1):
@@ -87,91 +90,117 @@ def selection_summary(dataset):
 
 
 def prediction():
-    model.fit(X.astype(np.float32),
-              y.astype(np.float32),
-              validation_data=(X_test.astype(np.float32), y_test.astype(np.float32)),
-              epochs=1,
-              verbose=0,
-              batch_size=2)
-    model.reset_states()
-
     # demonstrate prediction
     preds_scaled = []
     preds = []
     index_end_2021 = 38 * season_end - 1
     gw_start = 1
-    gw_end = n_future
+    gw_end = 38
 
     for i in range(gw_start - 1, gw_end):
-        x_input = np.array(
-            [scaled_all[:][index_end_2021 - n_steps + i: index_end_2021 + i] if i == 0 else np.array(
-                preds_scaled[i - 1])])
+        x_input = np.array([scaled_all[:][index_end_2021 - n_steps + i : index_end_2021 + i] if i == 0 else np.array(preds_scaled[i - 1])])
         x_input = x_input.reshape((1, n_steps, n_features)).astype(np.float32)
-        yhat = model.predict(x_input, verbose=0)
+        yhat = model.predict(x_input, batch_size=1)
         preds_scaled.append(yhat[0])
         yhat = inverse_scale(yhat[0])
         yhat = inverse_difference(all, yhat, len(scaled_test)-i)
         preds.append(yhat[0])
 
-    preds_t = np.array(preds).transpose()
+    preds = np.array(preds)
+    preds_t = preds.transpose()
     totals = [sum(p) for p in preds_t]
-    master["predicted 2021-22"] = np.round(totals, 3)
+    master["predicted"] = np.round(totals, 3) 
+    master["ppm"] = master.apply(lambda row: row["predicted"] / 38, axis=1)
+    master["cpp"] = master.apply(lambda row: row['now_cost'] / row["predicted"] if row["predicted"] > 0 else 0, axis=1)
 
     print('Test MSE: %.3f' % mean_squared_error(test, preds))
 
 
-def selection():
+def selection(gw_start, gw_end):
     # player selection
-    df = raw[
-        (raw["season"] == seasons[-1]) & (
-                raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
+    import pulp
+    import random
+
+    valids = []
+    df = raw[(raw["season"] == seasons[-1]) & (raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
     valids = df['id_player'].values.tolist()
 
     for v in valids:
-        df = raw[(raw["id_player"] == v) & (raw["season"].isin(seasons[:3])) & (
-                raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
+        df = raw[(raw["id_player"] == v) & (raw["season"].isin(seasons[:3])) & (raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
         if len(df) < 1:
             valids.remove(v)
 
     df = master[master['id_player'].isin(valids)].copy()
-    # df["actual"] = master.iloc[:, 193:230].sum(axis=1)
+    df["actual"] = master.iloc[:, 192+gw_start:192+gw_end].sum(axis=1)
+    df = df[df["cpp"] > 0]
 
     # define linear optimalization
-    prob = p.LpProblem('MaxPoints', p.LpMaximize)
-    pts = list(df["predicted 2021-22"])
+    prob = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
+    pts = list(df["predicted"])
     ids = list(df["id_player"])
     costs = list(df["now_cost"])
-    constraint_team = [[1 if df.iloc[i]['team'] == t else 0 for i in range(len(pts))] for t in
-                       teams["team_name"].values]
+    total_cost = random.randrange(85, 100)
+
+    fav_team = []
+    constraint_team = [[1 if df.iloc[i]['team'] == t else 0 for i in range(len(pts))] for t in teams["team_name"].values]
     pos_gk = [1 if df.iloc[i]['position'] == "GK" else 0 for i in range(len(pts))]
     pos_def = [1 if df.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts))]
     pos_mid = [1 if df.iloc[i]['position'] == "MID" else 0 for i in range(len(pts))]
     pos_fwd = [1 if df.iloc[i]['position'] == "FWD" else 0 for i in range(len(pts))]
 
-    pts_vars = [p.LpVariable(str(i), lowBound=0, upBound=1, cat='Binary') for i in ids]
-    prob += p.lpSum([pts[i] * pts_vars[i] for i in range(len(pts))])
-    prob += p.lpSum([costs[i] * pts_vars[i] for i in range(len(pts))]) == 100, "TotalCost"
-    prob += p.lpSum([pts_vars[i] for i in range(len(pts))]) == 15, "TotalPlayer"
-    prob += p.lpSum([pos_gk[i] * pts_vars[i] for i in range(len(pts))]) == 2, "TotalGk"
-    prob += p.lpSum([pos_def[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalDef"
-    prob += p.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
-    prob += p.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
+    pts_vars = [pulp.LpVariable(str(i), lowBound = 0, upBound = 1, cat='Binary') for i in ids]
+    prob += pulp.lpSum([pts[i] * pts_vars[i] for i in range(len(pts))])
+    prob += pulp.lpSum([costs[i] * pts_vars[i] for i in range(len(pts))]) <= total_cost, "TotalCost"
+    prob += pulp.lpSum([pts_vars[i] for i in range(len(pts))]) == 15, "TotalPlayer"
+    prob += pulp.lpSum([pos_gk[i] * pts_vars[i] for i in range(len(pts))]) == 2, "TotalGk"
+    prob += pulp.lpSum([pos_def[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalDef"
+    prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
+    prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
     for index, c in enumerate(constraint_team):
-        prob += p.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
+        if index not in fav_team:
+            prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
+        else:
+            prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
 
     prob.solve()
     selected = [int(var.name) for var in prob.variables() if var.value() == 1]
     players = df[df["id_player"].isin(selected)]
-    players = players[
-        ["name", "web_name", "team", "position", "code", "now_cost", "shirt", "actual", "predicted 2021-22"]]
-    return players
+    players = players[["id_player", "name", "web_name", "code", "team", "position", "now_cost", "shirt", "actual", "predicted"]]
+    
+    # starting XI
+    prob2 = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
+    pts2 = list(players["predicted"])
+    ids2 = list(players["id_player"])
+
+    pos_gk = [1 if players.iloc[i]['position'] == "GK" else 0 for i in range(len(pts2))]
+    pos_def = [1 if players.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts2))]
+    pos_mid = [1 if players.iloc[i]['position'] == "MID" else 0 for i in range(len(pts2))]
+    pos_fwd = [1 if players.iloc[i]['position'] == "FWD" else 0 for i in range(len(pts2))]
+
+    pts_vars2 = [pulp.LpVariable(str(i), lowBound = 0, upBound = 1, cat='Binary') for i in ids2]
+    prob2 += pulp.lpSum([pts2[i] * pts_vars2[i] for i in range(len(pts2))])
+    prob2 += pulp.lpSum([pts_vars2[i] for i in range(len(pts2))]) == 11, "TotalPlayer"
+    prob2 += pulp.lpSum([pos_gk[i] * pts_vars2[i] for i in range(len(pts2))]) == 1, "TotalGk"
+    prob2 += pulp.lpSum([pos_def[i] * pts_vars2[i] for i in range(len(pts2))]) >= 3, "TotalDef"
+    prob2 += pulp.lpSum([pos_mid[i] * pts_vars2[i] for i in range(len(pts2))]) >= 1, "TotalMid"
+    prob2 += pulp.lpSum([pos_fwd[i] * pts_vars2[i] for i in range(len(pts2))]) >= 1, "TotalFwd"
+    prob2.solve()
+
+    selected2 = [int(var.name) for var in prob2.variables() if var.value() == 1]
+    starting = df[df["id_player"].isin(selected2)]
+    starting = starting[["id_player", "name", "web_name", "code", "team", "position", "now_cost", "shirt", "actual", "predicted"]]
+
+    # subs
+    sub = players[~players["id_player"].isin(starting["id_player"].values)].copy()
+
+    return starting, sub
 
 
 if __name__ == '__main__':
     model = keras.models.load_model('model/fpl.h5')
     seasons = ['2018-19', '2019-20', '2020-21', '2021-22']
     gws = np.arange(1, 39)
-    scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaler = MinMaxScaler(feature_range=(0, 1))
     regex_exc = "loan|transfer|join|left|contract|retire"
 
     facts = pd.read_csv('dataset/facts.csv', sep=';')
