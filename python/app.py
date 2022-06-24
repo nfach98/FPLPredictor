@@ -12,8 +12,12 @@ app = Flask(__name__)
 
 @app.route('/recommend/', methods=['GET'])
 def predict():
+    teams = request.args.get('teams')
+    if (isinstance(teams,str)):
+        teams = teams.split(',')
+        teams = list(map(int, teams))
     prediction()
-    starting, sub = selection(1, 38)
+    starting, sub = selection(1, 38, teams)
     results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1)
     results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1)
     response = make_response(
@@ -113,13 +117,11 @@ def prediction():
     preds_t = preds.transpose()
     totals = [sum(p) for p in preds_t]
     master["predicted"] = np.round(totals, 3) 
-    master["ppm"] = master.apply(lambda row: row["predicted"] / 38, axis=1)
-    master["cpp"] = master.apply(lambda row: row['now_cost'] / row["predicted"] if row["predicted"] > 0 else 0, axis=1)
 
     print('Test MSE: %.3f' % mean_squared_error(test, preds))
 
 
-def selection(gw_start, gw_end):
+def selection(gw_start, gw_end, fav_team = []):
     # player selection
     import pulp
     import random
@@ -135,7 +137,7 @@ def selection(gw_start, gw_end):
 
     df = master[master['id_player'].isin(valids)].copy()
     df["actual"] = master.iloc[:, 192+gw_start:192+gw_end].sum(axis=1)
-    df = df[df["cpp"] > 0]
+    # df = df[df["cpp"] > 0]
 
     # define linear optimalization
     prob = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
@@ -144,7 +146,6 @@ def selection(gw_start, gw_end):
     costs = list(df["now_cost"])
     total_cost = random.randrange(85, 100)
 
-    fav_team = []
     constraint_team = [[1 if df.iloc[i]['team'] == t else 0 for i in range(len(pts))] for t in teams["team_name"].values]
     pos_gk = [1 if df.iloc[i]['position'] == "GK" else 0 for i in range(len(pts))]
     pos_def = [1 if df.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts))]
@@ -206,67 +207,27 @@ if __name__ == '__main__':
     scaler = MinMaxScaler(feature_range=(0, 1))
     regex_exc = "loan|transfer|join|left|contract|retire"
 
-    facts = pd.read_csv('dataset/facts.csv', sep=';')
-    records = pd.read_csv('dataset/records.csv', sep=';')
-    aggregated = pd.read_csv('dataset/aggregated.csv')
-    raw = pd.read_csv('dataset/player_raw.csv')
+    facts = pd.read_csv('datasets/facts.csv', sep=';')
+    records = pd.read_csv('datasets/records.csv', sep=';')
+    aggregated = pd.read_csv('datasets/aggregated.csv')
+    raw = pd.read_csv('datasets/player_raw.csv')
 
     valids = aggregated['id_player'].values.tolist()
     valids.sort()
 
-    teams = pd.read_csv('dataset/master_team_list.csv')
+    teams = pd.read_csv('datasets/master_team_list.csv')
     teams = teams[teams['season'] == '2021-22']
-
-    shirts = [
-        'shirt_3',
-        'shirt_7',
-        'shirt_94',
-        'shirt_36',
-        'shirt_90',
-        'shirt_8',
-        'shirt_31',
-        'shirt_11',
-        'shirt_2',
-        'shirt_13',
-        'shirt_14',
-        'shirt_43',
-        'shirt_1',
-        'shirt_4',
-        'shirt_45',
-        'shirt_20',
-        'shirt_6',
-        'shirt_57',
-        'shirt_21',
-        'shirt_39',
-    ]
-
-    df_shirts = []
-    df_codes = []
-    df_costs = []
-    df_web = []
-
-    for v in valids:
-        df = raw[raw["id_player"] == v].iloc[-1]
-        df_shirts.append(shirts[df['team'] - 1])
-        df_codes.append(df['code'])
-        df_costs.append(df['now_cost'] / 10)
-        df_web.append(df['web_name'])
 
     master = aggregated[aggregated['id_player'].isin(valids)].copy()
     master = master.sort_values(by="id_player")
     master = master.fillna(0)
-    master["shirt"] = df_shirts
-    master["code"] = df_codes
-    master["now_cost"] = df_costs
-    master["web_name"] = df_web
     master["actual"] = master.iloc[:, 193:231].sum(axis=1, numeric_only=True)
-    master["actual before 2021-22"] = master.iloc[:, 2:193].sum(axis=1)
-    master.rename(columns={0: 'id_player', 1: 'name', 230: 'team', 231: 'position'}, inplace=True)
+    # master.rename(columns={0: 'id_player', 1: 'name', 230: 'team', 231: 'position'}, inplace=True)
 
     # define input sequence
     season_start = 0
     season_end = 5
-    col_shift = 2
+    col_shift = 3
     col_start = 38 * season_start + col_shift  # 2016-17
     col_end = 38 * (season_end + 1) + col_shift  # 2021-22
 
@@ -280,13 +241,8 @@ if __name__ == '__main__':
 
     # horizontally stack columns
     train = np.hstack(tuple(data_train))
-    train_list = list(tuple(data_train))
-
     test = np.hstack(tuple(data_test))
-    test_list = list(tuple(data_test))
-
     all = np.hstack(tuple(data_all))
-    all_list = list(tuple(data_all))
 
     scaled_train = scale(train)
     scaled_test = scale(test)
