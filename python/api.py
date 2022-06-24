@@ -259,4 +259,4 @@ if __name__ == '__main__':
     # the dataset knows the number of features, e.g. 2
     n_features = X.shape[2]
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')
