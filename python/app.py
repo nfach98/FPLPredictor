@@ -1,12 +1,11 @@
 import numpy as np
 import pandas as pd
-import pulp as p
 import json
 import random
+import requests
 from flask import Flask, jsonify, make_response, request
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow import keras
 
 app = Flask(__name__)
 
@@ -100,7 +99,11 @@ def prediction():
     for i in range(gw_start - 1, gw_end):
         x_input = np.array([scaled_all[:][index_end_2021 - n_steps + i : index_end_2021 + i] if i == 0 else np.array(preds_scaled[i - 1])])
         x_input = x_input.reshape((1, n_steps, n_features)).astype(np.float32)
-        yhat = model.predict(x_input, batch_size=1)
+        data = json.dumps({"signature_name": "serving_default", "instances": x_input.tolist()})
+        headers = {"content-type": "application/json"}
+        json_response = requests.post("https://fpl-predict.herokuapp.com/v1/models/fpl:predict", data=data, headers=headers)
+        yhat = json.loads(json_response.text)['predictions']
+        # yhat = model.predict(x_input, batch_size=1)
         preds_scaled.append(yhat[0])
         yhat = inverse_scale(yhat[0])
         yhat = inverse_difference(all, yhat, len(scaled_test)-i)
@@ -197,7 +200,7 @@ def selection(gw_start, gw_end):
 
 
 if __name__ == '__main__':
-    model = keras.models.load_model('model/fpl.h5')
+    # model = keras.models.load_model('model/fpl.h5')
     seasons = ['2018-19', '2019-20', '2020-21', '2021-22']
     gws = np.arange(1, 39)
     scaler = MinMaxScaler(feature_range=(0, 1))
