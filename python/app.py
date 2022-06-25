@@ -103,6 +103,15 @@ def info():
     })
 
 
+@app.route('/teams')
+def teams():
+    teams = pd.read_csv('datasets/master_team_list.csv.csv')
+    result_teams = teams.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
+    return jsonify({
+        "teams": result_teams
+    })
+
+
 def split_sequences(sequences, n_steps):
     X, y = list(), list()
     for i in range(len(sequences)):

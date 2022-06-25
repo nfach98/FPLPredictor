@@ -1,0 +1,46 @@
+name: caretaker_fpl
+description: Fantasy Premier League predictor base on 2016-17 until 2020-21
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.16.2 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  cached_network_image: ^3.2.0
+  dartz: ^0.10.1
+  dio: ^4.0.6
+  equatable: ^2.0.3
+  flutter_screenutil: 5.5.2
+  flutter_svg: ^1.0.3
+  get_it: ^7.2.0
+  intl: ^0.17.0
+  provider: ^6.0.3
+  shimmer: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_launcher_icons: ^0.9.3
+  flutter_lints: ^1.0.0
+
+flutter_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/icons/icon.jpg"
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Radikal
+      fonts:
+        - asset: assets/fonts/radikal.otf
+  assets:
+    - assets/icons/
+    - assets/images/
