@@ -105,7 +105,8 @@ def info():
 
 @app.route('/teams')
 def teams():
-    teams = pd.read_csv('datasets/master_team_list.csv.csv')
+    teams = pd.read_csv('datasets/master_team_list.csv')
+    teams = teams[teams['season'] == '2021-22']
     result_teams = teams.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     return jsonify({
         "teams": result_teams
