@@ -21,10 +21,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       GetTeamsResponseModel.fromJson(res.data);
       return responseModel;
     } on DioError catch (e) {
-      Map data = e.response?.data;
       throw SocketError(
-        message: data.containsKey('message')
-            ? data['message'] : 'Network error');
+        message: 'Network error'
+      );
     }
   }
 }
