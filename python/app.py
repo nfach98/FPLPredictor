@@ -113,6 +113,44 @@ def teams():
     })
 
 
+@app.route('/players')
+def players():
+    limit = 12 if request.args.get('limit') is None else int(request.args.get('limit'))
+    page = 1 if request.args.get('page') is None else int(request.args.get('page'))
+    team = request.args.get('team')
+    pos = request.args.get('position')
+    search = request.args.get('search')
+
+    regex_exc = "loan|transfer|join|left|contract|retire"
+
+    df_aggregated = pd.read_csv('datasets/agg.csv')
+    df_aggregated = df_aggregated.sort_values(by="id_player")
+    df_raw = pd.read_csv('datasets/player_raw.csv')
+
+    df = df_raw[(df_raw["season"] == '2021-22') & (
+            df_raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
+    valids = df['id_player'].values.tolist()
+
+    df = df_aggregated[df_aggregated['id_player'].isin(valids)].copy()
+    if pos is not None:
+        df = df[df["position"] == pos]
+    if team is not None:
+        df = df[df["team_id"] == team]
+    if search is not None:
+        df = df[df["name"].str.contains(search, case=False)]
+    df = df.iloc[(page - 1) * limit:page * limit]
+    df = df[["id_player", "name", "web_name", "code", "position", "now_cost", "team", "team_id", "shirt"]]
+
+    result_players = df.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
+    return jsonify({
+        "players": result_players,
+        "page": page,
+        "prev": page - 1,
+        "next": page + 1,
+        "total": limit,
+    })
+
+
 def split_sequences(sequences, n_steps):
     X, y = list(), list()
     for i in range(len(sequences)):
