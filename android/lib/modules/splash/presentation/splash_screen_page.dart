@@ -69,7 +69,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
           top: 0,
           right: 0,
           bottom: 0,
-          child: Container(color: FplTheme.colors.red),
+          child: Container(color: Theme.of(context).primaryColor),
         ),
         Positioned(
           left: 0,
@@ -109,15 +109,16 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
                                           child: SizedBox(
                                             height: context.screenHeight,
                                             child: Container(
-                                                color:
-                                                    FplTheme.colors.red),
+                                              color: Theme.of(context).primaryColor,
+                                            ),
                                           ),
                                         ),
                                       )
                                     : SizedBox(
                                         height: context.screenHeight,
                                         child: Container(
-                                            color: FplTheme.colors.red),
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       ),
                               ),
                               if (!_logoScale1Controller.isCompleted)

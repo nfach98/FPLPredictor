@@ -1,19 +1,20 @@
 import 'dart:collection';
 
-import 'package:caretaker_fpl/modules/home/data/models/team_model.dart';
+import 'package:caretaker_fpl/modules/home/data/models/information_model.dart';
 
 class GetInformationsResponseModel {
   GetInformationsResponseModel({this.facts, this.records});
 
-  List<TeamModel>? facts;
-  List<TeamModel>? records;
+  List<InformationModel>? facts;
+  List<InformationModel>? records;
 
   factory GetInformationsResponseModel.fromJson(Map<String, dynamic> json) =>
       GetInformationsResponseModel(
-        facts:
-            (json['facts'] as List).map((v) => TeamModel.fromJson(v)).toList(),
+        facts: (json['facts'] as List)
+            .map((v) => InformationModel.fromJson(v))
+            .toList(),
         records: (json['records'] as List)
-            .map((v) => TeamModel.fromJson(v))
+            .map((v) => InformationModel.fromJson(v))
             .toList(),
       );
 

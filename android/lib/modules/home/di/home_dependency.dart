@@ -1,10 +1,12 @@
 import 'package:caretaker_fpl/modules/home/data/datasources/home_remote_data_source.dart';
 import 'package:caretaker_fpl/modules/home/domain/repositories/home_repository.dart';
+import 'package:caretaker_fpl/modules/home/domain/usecases/get_informations_usecase.dart';
 import 'package:caretaker_fpl/modules/home/domain/usecases/get_teams_usecase.dart';
-import 'package:caretaker_fpl/modules/home/presentation/notifier/home_notifier.dart';
+import 'package:caretaker_fpl/modules/home/presentation/recommend/notifier/recommend_notifier.dart';
 
 import '../../../injection_container.dart';
 import '../data/repositories/home_repository_impl.dart';
+import '../presentation/home/notifier/home_notifier.dart';
 
 class InjectDependencyHome extends IconfigureDependencies {
   @override
@@ -17,7 +19,11 @@ class InjectDependencyHome extends IconfigureDependencies {
 
   @override
   injectNotifier() {
-    sl.registerFactory(() => HomeNotifier(getTeamsUsecase: sl()));
+    sl.registerFactory(() => HomeNotifier(
+      getTeamsUsecase: sl(),
+      getInformationsUsecase: sl()
+    ));
+    sl.registerFactory(() => RecommendNotifier());
   }
 
   @override
@@ -34,5 +40,6 @@ class InjectDependencyHome extends IconfigureDependencies {
   @override
   injectUseCase() {
     sl.registerLazySingleton(() => GetTeamsUsecase(sl()));
+    sl.registerLazySingleton(() => GetInformationsUsecase(sl()));
   }
 }
