@@ -28,7 +28,7 @@ class _LoadingPageState extends State<LoadingPage> {
   void initState() {
     super.initState();
     _loadingNotifier = sl<LoadingNotifier>();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       if (widget.argument.trivias != null) {
         _loadingNotifier.setTrivias(widget.argument.trivias!);
       }

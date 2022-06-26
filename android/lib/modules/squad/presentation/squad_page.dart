@@ -1,7 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:caretaker_fpl/common/config/themes.dart';
-import 'package:caretaker_fpl/common/utils/extensions.dart';
+import 'package:caretaker_fpl/modules/squad/presentation/widgets/item_player_list.dart';
+import 'package:caretaker_fpl/modules/squad/presentation/widgets/item_player_pitch.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/widgets/row_position.dart';
+import 'package:caretaker_fpl/modules/squad/presentation/widgets/squad_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -27,7 +28,7 @@ class _SquadPageState extends State<SquadPage> {
   void initState() {
     super.initState();
     _squadNotifier = sl<SquadNotifier>();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       if (widget.argument.starting != null) {
         _squadNotifier.setStarting(widget.argument.starting!);
       }
@@ -65,42 +66,117 @@ class _SquadPageState extends State<SquadPage> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                  color: FplTheme.colors.dark,
+                  color: FplTheme.colors.white,
                 ),
               ),
               Column(
                 children: [
-                  Stack(
-                    children: [
-                      AspectRatio(
-                        aspectRatio: 1,
-                        child: FractionallySizedBox(
-                          widthFactor: 1.0,
-                          child: SvgPicture.asset(
-                            'assets/images/bg_pitch.svg',
-                            fit: BoxFit.cover,
+                  Container(
+                    padding: const EdgeInsets.all(2).r,
+                    margin: EdgeInsets.all(12).r,
+                    decoration: BoxDecoration(
+                      color: FplTheme.colors.purple,
+                      borderRadius: BorderRadius.circular(4).r,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SquadTab(
+                            onTap: () => notifier.setActiveTab(0),
+                            text: 'Pitch View',
+                            isSelected: notifier.activeTab == 0,
                           ),
                         ),
-                      ),
-                      if (notifier.starting != null) AspectRatio(
-                        aspectRatio: 1,
-                        child: FractionallySizedBox(
-                          widthFactor: 1,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              RowPosition(players: notifier.startGk),
-                              RowPosition(players: notifier.startDef),
-                              RowPosition(players: notifier.startMid),
-                              RowPosition(players: notifier.startFwd),
-                            ],
+                        Expanded(
+                          child: SquadTab(
+                            onTap: () => notifier.setActiveTab(1),
+                            text: 'List View',
+                            isSelected: notifier.activeTab == 1,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 12.h),
-                  RowPosition(players: notifier.sub),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (_, constraint) {
+                        if (notifier.activeTab == 0) {
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Stack(
+                                  children: [
+                                    AspectRatio(
+                                      aspectRatio: 1,
+                                      child: FractionallySizedBox(
+                                        widthFactor: 1.0,
+                                        child: SvgPicture.asset(
+                                          'assets/images/bg_pitch.svg',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    if (notifier.starting != null) AspectRatio(
+                                      aspectRatio: 1,
+                                      child: FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            RowPosition(players: notifier.startGk),
+                                            RowPosition(players: notifier.startDef),
+                                            RowPosition(players: notifier.startMid),
+                                            RowPosition(players: notifier.startFwd),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 12.h),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: notifier.sub?.map((e) {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ItemPlayerPitch(player: e),
+                                        SizedBox(height: 4.h),
+                                        Text(
+                                          notifier.sub?.indexOf(e) == 0
+                                              ? 'GK' : notifier.sub?.indexOf(e).toString() ?? '',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                                              fontSize: 10.sp,
+                                              fontWeight: FontWeight.w600
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList() ?? [],
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return ListView.separated(
+                            itemCount: notifier.all?.length ?? 0,
+                            itemBuilder: (_, index) => Padding(
+                              padding: const EdgeInsets.all(8).r,
+                              child: ItemPlayerList(
+                                player: notifier.all?[index],
+                              ),
+                            ),
+                            separatorBuilder: (_, index) => Container(
+                              height: 1.h,
+                              color: FplTheme.colors.gray,
+                            ),
+                          );
+                        }
+                      },
+                    )
+                  ),
                 ],
               ),
             ],

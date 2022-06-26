@@ -22,9 +22,6 @@ class LoadingNotifier extends ChangeNotifier {
 
   setTrivias(List<InformationEntity> value) {
     trivias = value;
-    trivias?.insert(0, const InformationEntity(
-     content: 'While you are waiting for our recommendation, here is trivias of the Premier League'
-    ));
     notifyListeners();
   }
 
