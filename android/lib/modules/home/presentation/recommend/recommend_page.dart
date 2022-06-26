@@ -1,4 +1,6 @@
 import 'package:caretaker_fpl/common/config/themes.dart';
+import 'package:caretaker_fpl/common/constants/route_constants.dart';
+import 'package:caretaker_fpl/modules/home/domain/entities/information_entity.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
 import 'package:caretaker_fpl/modules/home/presentation/recommend/widgets/item_team.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +9,14 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 import '../../../../injection_container.dart';
-import 'notifier/recommend_notifier.dart';
+import '../../../loading/presentation/arguments/loading_page_arguments.dart';
+import 'notifiers/recommend_notifier.dart';
 
 class RecommendPage extends StatefulWidget {
   final List<TeamEntity>? teams;
+  final List<InformationEntity>? trivias;
 
-  const RecommendPage({Key? key, this.teams}) : super(key: key);
+  const RecommendPage({Key? key, this.teams, this.trivias}) : super(key: key);
 
   @override
   State<RecommendPage> createState() => _RecommendPageState();
@@ -111,7 +115,14 @@ class _RecommendPageState extends State<RecommendPage> {
                     widthFactor: 1,
                     child: TextButton(
                       onPressed: () {
-
+                        Navigator.pushNamed(
+                          context,
+                          RouteConstants.loading,
+                          arguments: LoadingPageArguments(
+                            teams: notifier.selectedTeams,
+                            trivias: widget.trivias,
+                          ),
+                        );
                       },
                       child: const Text('Recommend'),
                     ),

@@ -2,11 +2,11 @@ import 'package:caretaker_fpl/modules/home/data/datasources/home_remote_data_sou
 import 'package:caretaker_fpl/modules/home/domain/repositories/home_repository.dart';
 import 'package:caretaker_fpl/modules/home/domain/usecases/get_informations_usecase.dart';
 import 'package:caretaker_fpl/modules/home/domain/usecases/get_teams_usecase.dart';
-import 'package:caretaker_fpl/modules/home/presentation/recommend/notifier/recommend_notifier.dart';
 
 import '../../../injection_container.dart';
 import '../data/repositories/home_repository_impl.dart';
-import '../presentation/home/notifier/home_notifier.dart';
+import '../presentation/home/notifiers/home_notifier.dart';
+import '../presentation/recommend/notifiers/recommend_notifier.dart';
 
 class InjectDependencyHome extends IconfigureDependencies {
   @override

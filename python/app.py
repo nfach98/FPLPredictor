@@ -39,7 +39,7 @@ def recommend():
     # define input sequence
     season_start = 0
     season_end = 5
-    col_shift = 3
+    col_shift = 4
     col_start = 38 * season_start + col_shift  # 2016-17
     col_end = 38 * (season_end + 1) + col_shift  # 2021-22
     gw_start = 1
@@ -123,7 +123,7 @@ def players():
 
     regex_exc = "loan|transfer|join|left|contract|retire"
 
-    df_aggregated = pd.read_csv('datasets/agg.csv')
+    df_aggregated = pd.read_csv('datasets/aggregated.csv')
     df_aggregated = df_aggregated.sort_values(by="id_player")
     df_raw = pd.read_csv('datasets/player_raw.csv')
 
@@ -255,7 +255,7 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
     prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
     prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
     for index, c in enumerate(constraint_team):
-        if index not in fav_team:
+        if index + 1 not in fav_team:
             prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
         else:
             prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)

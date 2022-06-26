@@ -20,8 +20,7 @@ class HomeNotifier with ChangeNotifier {
   bool isLoadingTeams = true;
   String? errorTeams;
 
-  List<InformationEntity>? facts;
-  List<InformationEntity>? records;
+  List<InformationEntity>? trivias;
   bool isLoadingInformations = true;
   String? errorInformations;
 
@@ -55,8 +54,9 @@ class HomeNotifier with ChangeNotifier {
     result.fold(
       (l) => errorInformations = l.message,
       (r) {
-        facts = r.facts;
-        records = r.records;
+        trivias = [];
+        if (r.facts != null) trivias?.addAll(r.facts!);
+        if (r.records != null) trivias?.addAll(r.records!);
       }
     );
 

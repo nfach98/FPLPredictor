@@ -1,4 +1,5 @@
 import 'package:caretaker_fpl/modules/home/di/home_dependency.dart';
+import 'package:caretaker_fpl/modules/loading/di/loading_dependency.dart';
 import 'package:get_it/get_it.dart';
 
 import 'common/utils/dio_config.dart';
@@ -19,4 +20,5 @@ Future configureDependencies() async {
 
   //! features dependencies
   InjectDependencyHome().inject();
+  InjectDependencyLoading().inject();
 }

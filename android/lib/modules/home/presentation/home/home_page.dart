@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../injection_container.dart';
-import '../home/notifier/home_notifier.dart';
+import '../home/notifiers/home_notifier.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -71,7 +71,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           body: TabBarView(
             controller: _tabController,
             children: [
-              RecommendPage(teams: notifier.teams),
+              RecommendPage(
+                teams: notifier.teams,
+                trivias: notifier.trivias,
+              ),
               Container(
                 child: Text('Predict'),
               ),
