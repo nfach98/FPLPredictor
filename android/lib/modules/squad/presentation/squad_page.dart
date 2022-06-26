@@ -96,9 +96,11 @@ class _SquadPageState extends State<SquadPage> {
                             ],
                           ),
                         ),
-                      )
+                      ),
                     ],
-                  )
+                  ),
+                  SizedBox(height: 12.h),
+                  RowPosition(players: notifier.sub),
                 ],
               ),
             ],
