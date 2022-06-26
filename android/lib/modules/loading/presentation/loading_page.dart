@@ -85,12 +85,12 @@ class _LoadingPageState extends State<LoadingPage> {
                 ),
               ),
               if (notifier.trivias != null) Padding(
-                padding: EdgeInsets.all(36).r,
+                padding: const EdgeInsets.all(36).r,
                 child: CarouselSlider(
                   options: CarouselOptions(
                     height: context.finalHeight,
                     autoPlay: true,
-                    autoPlayAnimationDuration: const Duration(seconds: 3),
+                    autoPlayAnimationDuration: const Duration(seconds: 2),
                     enableInfiniteScroll: true,
                     enlargeCenterPage: true,
                     viewportFraction: 1.0,

@@ -264,7 +264,7 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
     selected = [int(var.name) for var in prob.variables() if var.value() == 1]
     players = df[df["id_player"].isin(selected)].copy()
     players = players[
-        ["id_player", "name", "web_name", "code", "team", "position", "now_cost", "shirt", "actual", "predicted"]]
+        ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual", "predicted"]]
 
     # starting XI
     prob2 = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
@@ -288,7 +288,7 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
     selected2 = [int(var.name) for var in prob2.variables() if var.value() == 1]
     starting = df[df["id_player"].isin(selected2)].copy()
     starting = starting[
-        ["id_player", "name", "web_name", "code", "team", "position", "now_cost", "shirt", "actual", "predicted"]]
+        ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual", "predicted"]]
 
     # subs
     sub = players[~players["id_player"].isin(starting["id_player"].values)].copy()

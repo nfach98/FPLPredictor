@@ -18,7 +18,7 @@ class PlayerModel {
   final double? ptsPredicted;
 
   factory PlayerModel.fromJson(Map<String, dynamic> json) => PlayerModel(
-    id: json['id'],
+    id: json['id_player'],
     name: json['name'],
     webName: json['web_name'],
     position: json['position'],
@@ -33,7 +33,7 @@ class PlayerModel {
 
   HashMap<String, dynamic> get toMap {
     HashMap<String, dynamic> map = HashMap<String, dynamic>();
-    map['id'] = id;
+    map['id_player'] = id;
     map['name'] = name;
     map['web_name'] = webName;
     map['position'] = position;

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:caretaker_fpl/modules/home/domain/entities/information_entity.dart';
 import 'package:caretaker_fpl/modules/loading/domain/entities/player_entity.dart';
 import 'package:caretaker_fpl/modules/loading/domain/usecases/get_recommendation_usecase.dart';
@@ -38,6 +40,7 @@ class LoadingNotifier extends ChangeNotifier {
         starting = r.starting;
         sub = r.sub;
         totalPredicted = r.totalPredicted;
+        log(starting.toString(), name: 'recommend');
       }
     );
 
