@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:caretaker_fpl/modules/squad/data/models/player_model.dart';
+import 'package:caretaker_fpl/modules/loading/data/models/player_model.dart';
 import 'package:equatable/equatable.dart';
 
 class GetRecommendResponseModel extends Equatable {

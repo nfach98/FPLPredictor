@@ -40,7 +40,7 @@ class LoadingNotifier extends ChangeNotifier {
         starting = r.starting;
         sub = r.sub;
         totalPredicted = r.totalPredicted;
-        log(starting.toString(), name: 'recommend');
+        log(starting.toString(), name: 'starting');
       }
     );
 

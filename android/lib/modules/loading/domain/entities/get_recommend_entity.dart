@@ -1,5 +1,4 @@
 import 'package:caretaker_fpl/modules/loading/domain/entities/player_entity.dart';
-import 'package:caretaker_fpl/modules/squad/data/models/player_model.dart';
 import 'package:equatable/equatable.dart';
 
 class GetRecommendEntity extends Equatable {
