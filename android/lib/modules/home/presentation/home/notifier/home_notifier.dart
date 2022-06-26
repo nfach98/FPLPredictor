@@ -33,7 +33,13 @@ class HomeNotifier with ChangeNotifier {
 
     result.fold(
       (l) => errorTeams = l.message,
-      (r) => teams = r.teams
+      (r) {
+        teams = r.teams;
+        teams?.insert(0, const TeamEntity(
+          id: 0,
+          teamName: 'Any team',
+        ));
+      }
     );
 
     isLoadingTeams = false;

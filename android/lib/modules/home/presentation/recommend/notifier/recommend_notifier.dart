@@ -14,4 +14,9 @@ class RecommendNotifier extends ChangeNotifier {
     selectedTeams.remove(value);
     notifyListeners();
   }
+
+  clearTeam() {
+    selectedTeams.clear();
+    notifyListeners();
+  }
 }

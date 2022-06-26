@@ -71,11 +71,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           body: TabBarView(
             controller: _tabController,
             children: [
-              RecommendPage(teams: notifier.teams?..insert(0, const TeamEntity(
-                id: -1,
-                logo: 'https://brandlogos.net/wp-content/uploads/2021/10/premier-league-logo.png',
-                teamName: 'Any team',
-              ))),
+              RecommendPage(teams: notifier.teams),
               Container(
                 child: Text('Predict'),
               ),

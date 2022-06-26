@@ -11,30 +11,20 @@ class FplTheme {
     primaryColor: FplTheme.colors.green,
     accentColor: FplTheme.colors.dark,
     textTheme: TextTheme(
-      headline1: TextStyle(
-        fontWeight: FontWeight.w700,
-        fontSize: 24.sp,
-        color: FplTheme.colors.dark,
-      ),
-      headline2: TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 20.sp,
-        color: FplTheme.colors.dark,
-      ),
-      headline3: TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 16.sp,
-        color: FplTheme.colors.dark,
-      ),
-      bodyText1: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 14.sp,
-        color: FplTheme.colors.dark,
-      ),
-      bodyText2: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 12.sp,
-        color: FplTheme.colors.dark,
+      headline1: FplTheme.textStyles.headline1,
+      headline2: FplTheme.textStyles.headline2,
+      headline3: FplTheme.textStyles.headline3,
+      bodyText1: FplTheme.textStyles.bodyText1,
+      bodyText2: FplTheme.textStyles.bodyText2,
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(FplTheme.colors.dark),
+        foregroundColor: MaterialStateProperty.all(FplTheme.colors.white),
+        textStyle: MaterialStateProperty.all(
+          FplTheme.textStyles.bodyText1.copyWith(fontWeight: FontWeight.w600)
+        ),
+        padding: MaterialStateProperty.all(const EdgeInsets.all(16).r),
       ),
     ),
   );
@@ -52,123 +42,29 @@ class _Colors {
 }
 
 class _TextStyles {
-  final f32WhiteW700Quicksand =
-      TextStyle(fontFamily: 'Quicksand', fontWeight: FontWeight.w700, fontSize: 32.sp, color: Colors.white);
-  final f18BlackW600Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontWeight: FontWeight.w600,
-    fontSize: 18.sp,
-    color: FplTheme.colors.dark,
-  );
-
-  final f15BlackNormalInter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 15.sp,
-    color: FplTheme.colors.dark,
-  );
-
-  final f15BlackW400Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 15.sp,
-    fontWeight: FontWeight.w400,
-    color: FplTheme.colors.dark,
-  );
-  final f15TextColorSecondaryW400Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 15.sp,
-    fontWeight: FontWeight.w400,
-    color: FplTheme.colors.dark,
-  );
-
-  final f15BlackW600Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 15.sp,
-    fontWeight: FontWeight.w600,
-    color: FplTheme.colors.dark,
-  );
-
-  final f16BlackW600Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 16.sp,
-    fontWeight: FontWeight.w600,
-    color: FplTheme.colors.dark,
-  );
-  final f15DisabledNormalInter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 15.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f13BlackW600Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontWeight: FontWeight.w600,
-    fontSize: 13.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f13BaseColorW600Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontWeight: FontWeight.w600,
-    fontSize: 13.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f13TextColorSecondaryNormalInter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 13.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f13TextColorSecondaryW600Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 13.sp,
-    fontWeight: FontWeight.w600,
-    color: FplTheme.colors.dark,
-  );
-  final f13BaseColorW700Inter = TextStyle(
-    fontFamily: 'Inter',
+  final headline1 = TextStyle(
     fontWeight: FontWeight.w700,
-    fontSize: 13.sp,
+    fontSize: 24.sp,
     color: FplTheme.colors.dark,
   );
-  final f12BaseColorW600Inter = TextStyle(
-    fontFamily: 'Inter',
+  final headline2 = TextStyle(
     fontWeight: FontWeight.w600,
+    fontSize: 20.sp,
+    color: FplTheme.colors.dark,
+  );
+  final headline3 = TextStyle(
+    fontWeight: FontWeight.w600,
+    fontSize: 16.sp,
+    color: FplTheme.colors.dark,
+  );
+  final bodyText1 = TextStyle(
+    fontWeight: FontWeight.w400,
+    fontSize: 14.sp,
+    color: FplTheme.colors.dark,
+  );
+  final bodyText2 = TextStyle(
+    fontWeight: FontWeight.w400,
     fontSize: 12.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f13BlackW400Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontWeight: FontWeight.w400,
-    fontSize: 13.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f13TextColorSecondaryW400Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontWeight: FontWeight.w400,
-    fontSize: 13.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f11TextColorSecondaryNormalInter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 11.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f11BaseColorNormalInter = TextStyle(
-    fontFamily: 'Inter',
-    fontSize: 11.sp,
-    color: FplTheme.colors.dark,
-  );
-  final f11WhiteW600Inter = TextStyle(fontFamily: 'Inter', fontSize: 11.sp, color: Colors.white);
-  final f13BlackColorW400Inter = TextStyle(
-
-
-    fontFamily: 'Inter',
-    fontWeight: FontWeight.w400,
-    fontSize: 13.sp,
-    color: FplTheme.colors.dark,
-  );
-
-  final f13BlackTextColorSecondaryW400Inter = TextStyle(
-    fontFamily: 'Inter',
-    fontWeight: FontWeight.w400,
-    fontSize: 13.sp,
     color: FplTheme.colors.dark,
   );
 }
