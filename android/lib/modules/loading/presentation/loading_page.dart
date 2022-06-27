@@ -49,98 +49,93 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
-      child: ChangeNotifierProvider.value(
-        value: _loadingNotifier,
-        builder: (_, child) => Consumer<LoadingNotifier>(
-          builder: (_, notifier, child) => Scaffold(
-            body: Stack(
-              children: [
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(color: Theme.of(context).primaryColor),
+    return ChangeNotifierProvider.value(
+      value: _loadingNotifier,
+      builder: (_, child) => Consumer<LoadingNotifier>(
+        builder: (_, notifier, child) => Scaffold(
+          body: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(color: Theme.of(context).primaryColor),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                child: Image.asset(
+                  'assets/images/bg_fpl.png',
+                  fit: BoxFit.cover,
                 ),
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Image.asset(
-                    'assets/images/bg_fpl.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Material(
-                    elevation: 4.r,
-                    color: Colors.transparent,
-                    child: Center(
-                      child: Container(
-                        margin: const EdgeInsets.all(36).r,
-                        width: context.screenWidth,
-                        height: context.finalHeight,
-                        color: FplTheme.colors.green,
-                      ),
-                    ),
-                  ),
-                ),
-                if (notifier.trivias != null) Padding(
-                  padding: const EdgeInsets.all(36).r,
-                  child: CarouselSlider(
-                    options: CarouselOptions(
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                child: Material(
+                  elevation: 4.r,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Container(
+                      margin: const EdgeInsets.all(36).r,
+                      width: context.screenWidth,
                       height: context.finalHeight,
-                      autoPlay: true,
-                      autoPlayAnimationDuration: const Duration(seconds: 2),
-                      enableInfiniteScroll: true,
-                      enlargeCenterPage: true,
-                      viewportFraction: 1.0,
-                      scrollPhysics: const NeverScrollableScrollPhysics(),
+                      color: FplTheme.colors.green,
                     ),
-                    items: notifier.trivias?.map((e) => Padding(
-                      padding: const EdgeInsets.all(12).r,
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: FractionallySizedBox(
-                                widthFactor: 0.8,
-                                child: CachedNetworkImage(
-                                  imageUrl: e.image
-                                      ?? 'https://brandlogos.net/wp-content/uploads/2021/10/premier-league-logo.png',
-                                  color: e.image == null
-                                      ? FplTheme.colors.dark : null,
-                                  fit: BoxFit.contain,
-                                ),
+                  ),
+                ),
+              ),
+              if (notifier.trivias != null) Padding(
+                padding: const EdgeInsets.all(36).r,
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                    height: context.finalHeight,
+                    autoPlay: true,
+                    autoPlayAnimationDuration: const Duration(seconds: 2),
+                    enableInfiniteScroll: true,
+                    enlargeCenterPage: true,
+                    viewportFraction: 1.0,
+                    scrollPhysics: const NeverScrollableScrollPhysics(),
+                  ),
+                  items: notifier.trivias?.map((e) => Padding(
+                    padding: const EdgeInsets.all(12).r,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 1,
+                            child: FractionallySizedBox(
+                              widthFactor: 0.8,
+                              child: CachedNetworkImage(
+                                imageUrl: e.image
+                                    ?? 'https://brandlogos.net/wp-content/uploads/2021/10/premier-league-logo.png',
+                                color: e.image == null
+                                    ? FplTheme.colors.dark : null,
+                                fit: BoxFit.contain,
                               ),
                             ),
-                            SizedBox(height: 20.h),
-                            Text(
-                              e.content ?? '',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                            SizedBox(height: 32.h),
-                            CircularProgressIndicator(color: FplTheme.colors.white)
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 20.h),
+                          Text(
+                            e.content ?? '',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          SizedBox(height: 32.h),
+                          CircularProgressIndicator(color: FplTheme.colors.white)
+                        ],
                       ),
-                    )).toList(),
-                  ),
-                )
-              ],
-            ),
+                    ),
+                  )).toList(),
+                ),
+              )
+            ],
           ),
         ),
       ),

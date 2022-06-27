@@ -18,9 +18,13 @@ class LoadingRemoteDataSourceImpl implements LoadingRemoteDataSource {
   @override
   Future<GetRecommendResponseModel> getRecommendation({List<int>? teams}) async {
     try {
-      log(teams.toString().substring(1, teams.toString().length - 2)
-          .replaceAll(' ', ''), name: 'teams');
-      final res = await _dio.get(ApiPathConstants.recommend);
+      final res = await _dio.get(
+        ApiPathConstants.recommend,
+        queryParameters: {
+          'teams' : teams.toString().substring(1, teams.toString().length - 1)
+              .replaceAll(' ', ''),
+        }
+      );
       GetRecommendResponseModel responseModel =
       GetRecommendResponseModel.fromJson(res.data);
       return responseModel;

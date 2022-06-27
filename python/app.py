@@ -218,6 +218,7 @@ def prediction(gw_start, gw_end, n_steps, n_features, season_end, scaler,
 def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master, col_shift, fav_team=None):
     if fav_team is None:
         fav_team = []
+    print(fav_team)
 
     df = df_raw[(df_raw["season"] == seasons[-1]) & (
             df_raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
@@ -261,10 +262,10 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
         prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
         prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
         for index, c in enumerate(constraint_team):
-            if index not in fav_team:
-                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
-            else:
+            if index + 1 in fav_team:
                 prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
+            else:
+                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
         
         prob.solve()
         s = [int(var.name) for var in prob.variables() if var.value() == 1]

@@ -66,7 +66,7 @@ class _SquadPageState extends State<SquadPage> {
             backgroundColor: FplTheme.colors.dark,
             actions: [
               IconButton(
-                onPressed: () async{
+                onPressed: () async {
                   _screenshotController.capture().then((value) async {
                     await ImageGallerySaver.saveImage(
                       value ?? Uint8List(0),
