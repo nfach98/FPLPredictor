@@ -21,7 +21,9 @@ dependencies:
   flutter_svg: ^1.0.3
   get_it: ^7.2.0
   intl: ^0.17.0
+  path_provider:
   provider: ^6.0.3
+  screenshot: ^1.2.3
   shimmer: ^2.0.0
   toast: ^0.3.0
 

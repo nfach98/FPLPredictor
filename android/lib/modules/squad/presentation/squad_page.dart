@@ -6,7 +6,10 @@ import 'package:caretaker_fpl/modules/squad/presentation/widgets/squad_tab.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:toast/toast.dart';
 
 import '../../../injection_container.dart';
 import 'arguments/loading_page_arguments.dart';
@@ -23,11 +26,13 @@ class SquadPage extends StatefulWidget {
 
 class _SquadPageState extends State<SquadPage> {
   late SquadNotifier _squadNotifier;
+  late ScreenshotController _screenshotController;
 
   @override
   void initState() {
     super.initState();
     _squadNotifier = sl<SquadNotifier>();
+    _screenshotController = ScreenshotController();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       if (widget.argument.starting != null) {
         _squadNotifier.setStarting(widget.argument.starting!);
@@ -57,6 +62,30 @@ class _SquadPageState extends State<SquadPage> {
               fit: BoxFit.cover,
             ),
             backgroundColor: FplTheme.colors.dark,
+            actions: [
+              IconButton(
+                onPressed: () async{
+                  _screenshotController.captureAndSave(
+                    (await getApplicationDocumentsDirectory()).path,
+                    fileName: DateTime.now().microsecondsSinceEpoch.toString()
+                  ).whenComplete(() {
+                    ToastContext().init(context);
+                    Toast.show(
+                      'Your team is saved',
+                      duration: Toast.lengthShort,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      textStyle: Theme.of(context).textTheme.bodyText1
+                        ?.copyWith(color: FplTheme.colors.white),
+                      gravity: Toast.bottom,
+                    );
+                  });
+                },
+                icon: Icon(
+                  Icons.camera_alt_rounded,
+                  color: FplTheme.colors.white,
+                ),
+              ),
+            ],
           ),
           body: Stack(
             children: [
@@ -102,61 +131,64 @@ class _SquadPageState extends State<SquadPage> {
                       builder: (_, constraint) {
                         if (notifier.activeTab == 0) {
                           return Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Stack(
-                                  children: [
-                                    AspectRatio(
-                                      aspectRatio: 1,
-                                      child: FractionallySizedBox(
-                                        widthFactor: 1.0,
-                                        child: SvgPicture.asset(
-                                          'assets/images/bg_pitch.svg',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    if (notifier.starting != null) AspectRatio(
-                                      aspectRatio: 1,
-                                      child: FractionallySizedBox(
-                                        widthFactor: 1,
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            RowPosition(players: notifier.startGk),
-                                            RowPosition(players: notifier.startDef),
-                                            RowPosition(players: notifier.startMid),
-                                            RowPosition(players: notifier.startFwd),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 12.h),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: notifier.sub?.map((e) {
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ItemPlayerPitch(player: e),
-                                        SizedBox(height: 4.h),
-                                        Text(
-                                          notifier.sub?.indexOf(e) == 0
-                                              ? 'GK' : notifier.sub?.indexOf(e).toString() ?? '',
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                                              fontSize: 10.sp,
-                                              fontWeight: FontWeight.w600
+                            child: Screenshot(
+                              controller: _screenshotController,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      AspectRatio(
+                                        aspectRatio: 1,
+                                        child: FractionallySizedBox(
+                                          widthFactor: 1.0,
+                                          child: SvgPicture.asset(
+                                            'assets/images/bg_pitch.svg',
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
-                                      ],
-                                    );
-                                  }).toList() ?? [],
-                                ),
-                              ],
+                                      ),
+                                      if (notifier.starting != null) AspectRatio(
+                                        aspectRatio: 1,
+                                        child: FractionallySizedBox(
+                                          widthFactor: 1,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              RowPosition(players: notifier.startGk),
+                                              RowPosition(players: notifier.startDef),
+                                              RowPosition(players: notifier.startMid),
+                                              RowPosition(players: notifier.startFwd),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: notifier.sub?.map((e) {
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ItemPlayerPitch(player: e),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            notifier.sub?.indexOf(e) == 0
+                                              ? 'GK' : notifier.sub?.indexOf(e).toString() ?? '',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                                              fontSize: 10.sp,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }).toList() ?? [],
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         } else {
@@ -185,7 +217,8 @@ class _SquadPageState extends State<SquadPage> {
                         color: FplTheme.colors.dark,
                         padding: const EdgeInsets.all(12).r,
                         child: Text(
-                          'Total predicted points: ${notifier.totalPredicted} pts',
+                          'Total predicted points: '
+                          '${notifier.totalPredicted?.toStringAsFixed(3)} pts',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.headline3?.copyWith(
                             color: FplTheme.colors.white,

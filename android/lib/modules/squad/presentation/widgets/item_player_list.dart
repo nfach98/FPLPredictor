@@ -2,8 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:caretaker_fpl/common/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../common/config/themes.dart';
 import '../../../loading/domain/entities/player_entity.dart';
+import '../notifiers/squad_notifier.dart';
 
 class ItemPlayerList extends StatelessWidget {
   final PlayerEntity? player;
@@ -46,14 +49,34 @@ class ItemPlayerList extends StatelessWidget {
             ],
           ),
         ),
+        if (Provider.of<SquadNotifier>(context).captain == player?.code)
+          SizedBox(
+            width: 20.w,
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100).r,
+                  color: FplTheme.colors.dark,
+                ),
+                child: Center(
+                  child: Text(
+                    'C',
+                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                      color: FplTheme.colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         SizedBox(width: 12.w),
         Text(
           '${player?.ptsPredicted.toString()} pts',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.bodyText1?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.bodyText1,
         ),
       ],
     );
