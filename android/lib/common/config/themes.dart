@@ -7,7 +7,7 @@ class FplTheme {
   static final dimens = _Dimens();
   
   static final theme = ThemeData(
-    fontFamily: 'Radikal',
+    fontFamily: 'FF Mark Pro',
     primaryColor: FplTheme.colors.green,
     accentColor: FplTheme.colors.dark,
     textTheme: TextTheme(

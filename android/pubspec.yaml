@@ -46,6 +46,9 @@ flutter:
     - family: Radikal
       fonts:
         - asset: assets/fonts/radikal.otf
+    - family: FF Mark Pro
+      fonts:
+        - asset: assets/fonts/ff_mark_pro.otf
   assets:
     - assets/icons/
     - assets/images/
