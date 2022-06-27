@@ -138,12 +138,15 @@ class _SquadPageState extends State<SquadPage> {
                         Text(
                           'Total predicted points',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
+                        SizedBox(height: 4.h),
                         Text(
                           '${notifier.totalPredicted?.toStringAsFixed(3)} pts',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headline3?.copyWith(
+                          style: Theme.of(context).textTheme.headline2?.copyWith(
                             color: FplTheme.colors.red,
                           ),
                         ),
