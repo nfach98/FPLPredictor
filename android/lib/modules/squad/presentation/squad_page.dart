@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:caretaker_fpl/common/config/themes.dart';
+import 'package:caretaker_fpl/modules/squad/presentation/widgets/dialog_player.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/widgets/item_player_list.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/widgets/item_player_pitch.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/widgets/row_position.dart';
@@ -130,6 +131,25 @@ class _SquadPageState extends State<SquadPage> {
                       ],
                     ),
                   ),
+                  FractionallySizedBox(
+                    widthFactor: 1.0,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Total predicted points',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Text(
+                          '${notifier.totalPredicted?.toStringAsFixed(3)} pts',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline3?.copyWith(
+                            color: FplTheme.colors.red,
+                          ),
+                        ),
+                      ],
+                    )
+                  ),
                   Expanded(
                     child: LayoutBuilder(
                       builder: (_, constraint) {
@@ -178,7 +198,18 @@ class _SquadPageState extends State<SquadPage> {
                                         return Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            ItemPlayerPitch(player: e),
+                                            ItemPlayerPitch(
+                                              player: e,
+                                              onTap: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (_) => DialogPlayer(
+                                                    codeCaptain: notifier.captain,
+                                                    player: e,
+                                                  ),
+                                                );
+                                              },
+                                            ),
                                             SizedBox(height: 4.h),
                                             Text(
                                               notifier.sub?.indexOf(e) == 0
@@ -215,24 +246,6 @@ class _SquadPageState extends State<SquadPage> {
                         }
                       },
                     )
-                  ),
-                  FractionallySizedBox(
-                    widthFactor: 1.0,
-                    child: Material(
-                      elevation: 4.r,
-                      child: Container(
-                        color: FplTheme.colors.dark,
-                        padding: const EdgeInsets.all(12).r,
-                        child: Text(
-                          'Total predicted points: '
-                          '${notifier.totalPredicted?.toStringAsFixed(3)} pts',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headline3?.copyWith(
-                            color: FplTheme.colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),

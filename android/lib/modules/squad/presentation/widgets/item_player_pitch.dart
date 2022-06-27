@@ -10,19 +10,23 @@ import '../../../../common/config/themes.dart';
 
 class ItemPlayerPitch extends StatelessWidget {
   final PlayerEntity? player;
+  final Function() onTap;
   
-  const ItemPlayerPitch({Key? key, this.player}) : super(key: key);
+  const ItemPlayerPitch({Key? key, this.player, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: context.screenWidth / 5.5,
-      height: context.screenWidth / 4.5,
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              Expanded(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: SizedBox(
+        width: context.screenWidth / 5.5,
+        height: context.screenWidth / 4.5,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Expanded(
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: CachedNetworkImage(
@@ -30,74 +34,75 @@ class ItemPlayerPitch extends StatelessWidget {
                       fit: BoxFit.contain,
                     ),
                   )
-              ),
-              SizedBox(height: 4.h),
-              FractionallySizedBox(
-                widthFactor: 1.0,
-                child: Container(
-                  color: FplTheme.colors.dark,
-                  alignment: Alignment.center,
-                  child: Text(
-                    player?.webName ?? '',
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                        color: FplTheme.colors.white,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600
-                    ),
-                  ),
                 ),
-              ),
-              FractionallySizedBox(
-                widthFactor: 1.0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: FplTheme.colors.green,
-                    borderRadius: BorderRadius.vertical(
-                      bottom: const Radius.circular(4).r,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${player?.ptsPredicted.toString()} pts',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                        color: FplTheme.colors.dark,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          if (Provider.of<SquadNotifier>(context).captain == player?.code) Positioned(
-            right: 0,
-            child: SizedBox(
-              width: 20.w,
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100).r,
+                SizedBox(height: 4.h),
+                FractionallySizedBox(
+                  widthFactor: 1.0,
+                  child: Container(
                     color: FplTheme.colors.dark,
-                  ),
-                  child: Center(
+                    alignment: Alignment.center,
                     child: Text(
-                      'C',
+                      player?.webName ?? '',
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyText2?.copyWith(
                         color: FplTheme.colors.white,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600
+                      ),
+                    ),
+                  ),
+                ),
+                FractionallySizedBox(
+                  widthFactor: 1.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: FplTheme.colors.green,
+                      borderRadius: BorderRadius.vertical(
+                        bottom: const Radius.circular(4).r,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '${player?.ptsPredicted.toString()} pts',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                          color: FplTheme.colors.dark,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            if (Provider.of<SquadNotifier>(context).captain == player?.code) Positioned(
+              right: 0,
+              child: SizedBox(
+                width: 20.w,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100).r,
+                      color: FplTheme.colors.dark,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'C',
+                        style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                          color: FplTheme.colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

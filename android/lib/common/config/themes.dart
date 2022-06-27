@@ -22,7 +22,7 @@ class FplTheme {
         backgroundColor: MaterialStateProperty.all(FplTheme.colors.dark),
         foregroundColor: MaterialStateProperty.all(FplTheme.colors.white),
         textStyle: MaterialStateProperty.all(
-          FplTheme.textStyles.bodyText1.copyWith(fontWeight: FontWeight.w600)
+          FplTheme.textStyles.headline3
         ),
         padding: MaterialStateProperty.all(const EdgeInsets.all(16).r),
       ),
