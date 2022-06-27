@@ -39,7 +39,7 @@ def recommend():
     # define input sequence
     season_start = 0
     season_end = 5
-    col_shift = 4
+    col_shift = 3
     col_start = 38 * season_start + col_shift  # 2016-17
     col_end = 38 * (season_end + 1) + col_shift  # 2021-22
     gw_start = 1
@@ -78,7 +78,7 @@ def recommend():
     )
     starting, sub = selection(
         seasons=seasons, gw_start=gw_start, gw_end=gw_end, regex_exc=regex_exc,
-        df_teams=df_teams, df_raw=df_raw, df_master=df_master, fav_team=fav
+        df_teams=df_teams, df_raw=df_raw, df_master=df_master, col_shift=col_shift, fav_team=fav
     )
     results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
@@ -215,7 +215,7 @@ def prediction(gw_start, gw_end, n_steps, n_features, season_end, scaler,
     print('Test MSE: %.3f' % mean_squared_error(df_test, preds))
 
 
-def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master, fav_team=None):
+def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master, col_shift, fav_team=None):
     if fav_team is None:
         fav_team = []
 
@@ -226,43 +226,55 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
     for v in valids:
         df = df_raw[(df_raw["id_player"] == v) & (df_raw["season"].isin(seasons[:-1])) & (
                 df_raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
-        if len(df) < 1:
+        if df.shape[0] < 1:
             valids.remove(v)
 
     df = df_master[df_master['id_player'].isin(valids)].copy()
-    df["actual"] = df_master.iloc[:, 192 + gw_start:192 + gw_end].sum(axis=1)
+    df["actual"] = df_master.iloc[:, 189 + col_shift + gw_start:189 + col_shift + gw_end].sum(axis=1)
 
     # define linear optimalization
-    prob = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
-    pts = list(df["predicted"])
-    ids = list(df["id_player"])
-    costs = list(df["now_cost"])
-    total_cost = random.randrange(85, 100)
+    solutions = []
+    selected = []
 
-    constraint_team = [[1 if df.iloc[i]['team'] == t else 0 for i in range(len(pts))] for t in
-                       df_teams["team_name"].values]
-    pos_gk = [1 if df.iloc[i]['position'] == "GK" else 0 for i in range(len(pts))]
-    pos_def = [1 if df.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts))]
-    pos_mid = [1 if df.iloc[i]['position'] == "MID" else 0 for i in range(len(pts))]
-    pos_fwd = [1 if df.iloc[i]['position'] == "FWD" else 0 for i in range(len(pts))]
+    for sol in range(10):
+        df_new = df[~df["id_player"].isin(selected)].copy()
 
-    pts_vars = [pulp.LpVariable(str(i), lowBound=0, upBound=1, cat='Binary') for i in ids]
-    prob += pulp.lpSum([pts[i] * pts_vars[i] for i in range(len(pts))])
-    prob += pulp.lpSum([costs[i] * pts_vars[i] for i in range(len(pts))]) <= total_cost, "TotalCost"
-    prob += pulp.lpSum([pts_vars[i] for i in range(len(pts))]) == 15, "TotalPlayer"
-    prob += pulp.lpSum([pos_gk[i] * pts_vars[i] for i in range(len(pts))]) == 2, "TotalGk"
-    prob += pulp.lpSum([pos_def[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalDef"
-    prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
-    prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
-    for index, c in enumerate(constraint_team):
-        if index + 1 not in fav_team:
-            prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
-        else:
-            prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
+        prob = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
+        pts = list(df_new["predicted"])
+        ids = list(df_new["id_player"])
+        costs = list(df_new["now_cost"])
 
-    prob.solve()
-    selected = [int(var.name) for var in prob.variables() if var.value() == 1]
-    players = df[df["id_player"].isin(selected)].copy()
+        fav_team = []
+        constraint_team = [[1 if df_new.iloc[i]['team'] == t else 0 for i in range(len(pts))] for t in df_teams["team_name"].values]
+        pos_gk = [1 if df_new.iloc[i]['position'] == "GK" else 0 for i in range(len(pts))]
+        pos_def = [1 if df_new.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts))]
+        pos_mid = [1 if df_new.iloc[i]['position'] == "MID" else 0 for i in range(len(pts))]
+        pos_fwd = [1 if df_new.iloc[i]['position'] == "FWD" else 0 for i in range(len(pts))]
+
+        pts_vars = [pulp.LpVariable(str(i), lowBound = 0, upBound = 1, cat='Binary') for i in ids]
+        prob += pulp.lpSum([pts[i] * pts_vars[i] for i in range(len(pts))])
+        # prob += pulp.lpSum([pts[i] * pts_vars[i] for i in range(len(pts))]) <= pts_max - i * i, "MaxPts"
+        prob += pulp.lpSum([costs[i] * pts_vars[i] for i in range(len(pts))]) <= 100, "TotalCost"
+        prob += pulp.lpSum([pts_vars[i] for i in range(len(pts))]) == 15, "TotalPlayer"
+        prob += pulp.lpSum([pos_gk[i] * pts_vars[i] for i in range(len(pts))]) == 2, "TotalGk"
+        prob += pulp.lpSum([pos_def[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalDef"
+        prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
+        prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
+        for index, c in enumerate(constraint_team):
+            if index not in fav_team:
+                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
+            else:
+                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
+        
+        prob.solve()
+        s = [int(var.name) for var in prob.variables() if var.value() == 1]
+        n_len = random.randint(1, 10)
+        selected = selected + s[:-n_len]
+        solutions.append((s, prob.objective.value()))
+
+    # squad select
+    n_solution = random.randint(0, 10)
+    players = df[df["id_player"].isin(solutions[n_solution][0])].copy()
     players = players[
         ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual", "predicted"]]
 

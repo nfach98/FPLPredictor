@@ -73,7 +73,7 @@ class _SquadPageState extends State<SquadPage> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(2).r,
-                    margin: EdgeInsets.all(12).r,
+                    margin: const EdgeInsets.all(12).r,
                     decoration: BoxDecoration(
                       color: FplTheme.colors.purple,
                       borderRadius: BorderRadius.circular(4).r,
@@ -176,6 +176,23 @@ class _SquadPageState extends State<SquadPage> {
                         }
                       },
                     )
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: 1.0,
+                    child: Material(
+                      elevation: 4.r,
+                      child: Container(
+                        color: FplTheme.colors.dark,
+                        padding: const EdgeInsets.all(12).r,
+                        child: Text(
+                          'Total predicted points: ${notifier.totalPredicted} pts',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline3?.copyWith(
+                            color: FplTheme.colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -15,7 +15,7 @@ class ItemPlayerList extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          height: context.screenWidth / 8,
+          height: context.screenWidth / 9,
           child: AspectRatio(
             aspectRatio: 1,
             child: CachedNetworkImage(
@@ -25,24 +25,35 @@ class ItemPlayerList extends StatelessWidget {
           ),
         ),
         SizedBox(width: 12.w),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              player?.webName ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                fontWeight: FontWeight.w600,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                player?.webName ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            Text(
-              '${player?.team ?? ''} | ${player?.position ?? ''}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyText2,
-            ),
-          ],
+              Text(
+                '${player?.team ?? ''} | ${player?.position ?? ''}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 12.w),
+        Text(
+          '${player?.ptsPredicted.toString()} pts',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodyText1?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );
