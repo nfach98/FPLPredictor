@@ -19,7 +19,9 @@ class ItemTeam extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          border: Border.all(
+          border: team == null
+          ? null
+          : Border.all(
             color: isSelected
               ? Theme.of(context).primaryColor : FplTheme.colors.gray,
             width: isSelected ? 4.0 : 2.0,
@@ -41,7 +43,17 @@ class ItemTeam extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8.h),
-            Text(
+            if (team == null) FractionallySizedBox(
+              widthFactor: 0.5,
+              child: Container(
+                height: 16.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4.r),
+                  color: FplTheme.colors.white,
+                ),
+              ),
+            ),
+            if (team != null) Text(
               team?.teamName ?? '',
               style: Theme.of(context).textTheme.bodyText1,
             ),

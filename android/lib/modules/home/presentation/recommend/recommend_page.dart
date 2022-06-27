@@ -6,6 +6,7 @@ import 'package:caretaker_fpl/modules/home/presentation/recommend/widgets/item_t
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:toast/toast.dart';
 
 import '../../../../injection_container.dart';
@@ -72,42 +73,58 @@ class _RecommendPageState extends State<RecommendPage> {
                     crossAxisCount: 3,
                     childAspectRatio: 1,
                   ),
-                  itemCount: widget.teams?.length ?? 0,
-                  itemBuilder: (_, index) => ItemTeam(
-                    isSelected: notifier.selectedTeams.contains(index),
-                    onTap: () {
-                      if (!notifier.selectedTeams.contains(index)) {
-                        if (index == 0) {
-                          _recommendNotifier.clearTeam();
-                          _recommendNotifier.addTeam(index);
-                        } else {
-                          if (notifier.selectedTeams.length == 5) {
-                            ToastContext().init(context);
-                            Toast.show(
-                              'You have already choosen 5 teams',
-                              duration: Toast.lengthShort,
-                              backgroundColor: Theme.of(context).primaryColor,
-                              textStyle: Theme.of(context).textTheme.bodyText1
-                                  ?.copyWith(color: FplTheme.colors.white),
-                              gravity: Toast.bottom,
-                            );
-                          } else {
-                            _recommendNotifier.removeTeam(0);
+                  itemCount: widget.teams?.length ?? 21,
+                  itemBuilder: (_, index) {
+                    if (widget.teams == null) {
+                      return Shimmer.fromColors(
+                        highlightColor: FplTheme.colors.gray,
+                        baseColor: Colors.grey,
+                        child: ItemTeam(
+                          isSelected: false,
+                          onTap: () {
+
+                          },
+                          team: null,
+                        ),
+                      );
+                    }
+
+                    return ItemTeam(
+                      isSelected: notifier.selectedTeams.contains(index),
+                      onTap: () {
+                        if (!notifier.selectedTeams.contains(index)) {
+                          if (index == 0) {
+                            _recommendNotifier.clearTeam();
                             _recommendNotifier.addTeam(index);
+                          } else {
+                            if (notifier.selectedTeams.length == 5) {
+                              ToastContext().init(context);
+                              Toast.show(
+                                'You have already choosen 5 teams',
+                                duration: Toast.lengthShort,
+                                backgroundColor: Theme.of(context).primaryColor,
+                                textStyle: Theme.of(context).textTheme.bodyText1
+                                    ?.copyWith(color: FplTheme.colors.white),
+                                gravity: Toast.bottom,
+                              );
+                            } else {
+                              _recommendNotifier.removeTeam(0);
+                              _recommendNotifier.addTeam(index);
+                            }
+                          }
+                        } else if (index != 0) {
+                          _recommendNotifier.removeTeam(index);
+                          if (notifier.selectedTeams.isEmpty) {
+                            _recommendNotifier.addTeam(0);
                           }
                         }
-                      } else if (index != 0) {
-                        _recommendNotifier.removeTeam(index);
-                        if (notifier.selectedTeams.isEmpty) {
-                          _recommendNotifier.addTeam(0);
-                        }
-                      }
-                    },
-                    team: widget.teams?[index],
-                  ),
+                      },
+                      team: widget.teams?[index],
+                    );
+                  },
                 ),
               ),
-              Material(
+              if (widget.teams != null && widget.trivias != null) Material(
                 elevation: 4.r,
                 child: Padding(
                   padding: EdgeInsets.all(16.r),

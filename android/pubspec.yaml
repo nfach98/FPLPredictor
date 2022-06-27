@@ -20,6 +20,7 @@ dependencies:
   flutter_screenutil: 5.5.2
   flutter_svg: ^1.0.3
   get_it: ^7.2.0
+  image_gallery_saver: ^1.7.1
   intl: ^0.17.0
   path_provider:
   provider: ^6.0.3

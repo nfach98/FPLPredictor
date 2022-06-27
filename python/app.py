@@ -236,7 +236,7 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
     solutions = []
     selected = []
 
-    for sol in range(10):
+    for sol in range(4):
         df_new = df[~df["id_player"].isin(selected)].copy()
 
         prob = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
@@ -273,7 +273,7 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
         solutions.append((s, prob.objective.value()))
 
     # squad select
-    n_solution = random.randint(0, 10)
+    n_solution = random.randint(0, 3)
     players = df[df["id_player"].isin(solutions[n_solution][0])].copy()
     players = players[
         ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual", "predicted"]]
