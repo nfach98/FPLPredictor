@@ -122,6 +122,9 @@ def players():
     search = request.args.get('search')
 
     regex_exc = "loan|transfer|join|left|contract|retire"
+    col_shift = 3
+    gw_start = 1
+    gw_end = 38
 
     df_aggregated = pd.read_csv('datasets/aggregated.csv')
     df_aggregated = df_aggregated.sort_values(by="id_player")
@@ -132,14 +135,18 @@ def players():
     valids = df['id_player'].values.tolist()
 
     df = df_aggregated[df_aggregated['id_player'].isin(valids)].copy()
+    df["actual"] = df_aggregated.iloc[:, 189 + col_shift + gw_start:189 + col_shift + gw_end].sum(axis=1)
+    df.sort_values(by=["actual"], ascending=False)
+
     if pos is not None:
         df = df[df["position"] == pos]
     if team is not None:
         df = df[df["team_id"] == team]
     if search is not None:
-        df = df[df["name"].str.contains(search, case=False)]
+        df = df[(df["name"].str.contains(search, case=False)) | df["web_name"].str.contains(search, case=False)]
+    
     df = df.iloc[(page - 1) * limit:page * limit]
-    df = df[["id_player", "name", "web_name", "code", "position", "now_cost", "team", "team_id", "shirt"]]
+    df = df[["id_player", "name", "web_name", "code", "position", "now_cost", "team", "team_id", "shirt", "actual"]]
 
     result_players = df.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     return jsonify({

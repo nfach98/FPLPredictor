@@ -1,5 +1,6 @@
 import 'package:caretaker_fpl/common/config/themes.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
+import 'package:caretaker_fpl/modules/home/presentation/predict/predict_page.dart';
 import 'package:caretaker_fpl/modules/home/presentation/recommend/recommend_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -75,8 +76,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 teams: notifier.teams,
                 trivias: notifier.trivias,
               ),
-              Container(
-                child: Text('Predict'),
+              PredictPage(
+                teams: notifier.teams,
+                trivias: notifier.trivias,
               ),
             ],
           ),

@@ -5,4 +5,5 @@ class ApiPathConstants {
   static const String recommend = '/recommend';
   static const String informations = '/informations';
   static const String teams = '/teams';
+  static const String players = '/players';
 }

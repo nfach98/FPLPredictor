@@ -142,7 +142,7 @@ class _SquadPageState extends State<SquadPage> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(height: 4.h),
+                        SizedBox(height: 2.h),
                         Text(
                           '${notifier.totalPredicted?.toStringAsFixed(3)} pts',
                           textAlign: TextAlign.center,

@@ -12,7 +12,6 @@ class SquadNotifier extends ChangeNotifier {
   List<PlayerEntity>? all;
   double? totalPredicted;
 
-
   List<PlayerEntity>? startGk;
   List<PlayerEntity>? startDef;
   List<PlayerEntity>? startMid;
