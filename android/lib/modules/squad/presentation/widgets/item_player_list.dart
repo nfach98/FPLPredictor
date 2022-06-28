@@ -10,75 +10,80 @@ import '../notifiers/squad_notifier.dart';
 
 class ItemPlayerList extends StatelessWidget {
   final PlayerEntity? player;
+  final Function() onTap;
 
-  const ItemPlayerList({Key? key, this.player}) : super(key: key);
+  const ItemPlayerList({Key? key, this.player, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          height: context.screenWidth / 9,
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: CachedNetworkImage(
-              imageUrl: getShirt(player?.shirt, player?.position),
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-        SizedBox(width: 12.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                player?.webName ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                '${player?.team ?? ''} | ${player?.position ?? ''}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyText2,
-              ),
-            ],
-          ),
-        ),
-        if (Provider.of<SquadNotifier>(context).captain == player?.code)
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Row(
+        children: [
           SizedBox(
-            width: 20.w,
+            height: context.screenWidth / 9,
             child: AspectRatio(
               aspectRatio: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100).r,
-                  color: FplTheme.colors.dark,
+              child: CachedNetworkImage(
+                imageUrl: getShirt(player?.shirt, player?.position),
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  player?.webName ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                child: Center(
-                  child: Text(
-                    'C',
-                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                      color: FplTheme.colors.white,
-                      fontWeight: FontWeight.w600,
+                Text(
+                  '${player?.team ?? ''} | ${player?.position ?? ''}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ],
+            ),
+          ),
+          if (Provider.of<SquadNotifier>(context).captain == player?.code)
+            SizedBox(
+              width: 20.w,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100).r,
+                    color: FplTheme.colors.dark,
+                  ),
+                  child: Center(
+                    child: Text(
+                      'C',
+                      style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                        color: FplTheme.colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
+          SizedBox(width: 12.w),
+          Text(
+            '${player?.ptsPredicted.toString()} pts',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyText2,
           ),
-        SizedBox(width: 12.w),
-        Text(
-          '${player?.ptsPredicted.toString()} pts',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.bodyText2,
-        ),
-      ],
+        ],
+      ),
     );
   }
 

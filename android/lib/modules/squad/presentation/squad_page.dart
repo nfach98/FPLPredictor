@@ -239,6 +239,17 @@ class _SquadPageState extends State<SquadPage> {
                               padding: const EdgeInsets.all(8).r,
                               child: ItemPlayerList(
                                 player: notifier.all?[index],
+                                onTap: () {
+                                  if (notifier.all?[index] != null) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => DialogPlayer(
+                                        codeCaptain: notifier.captain,
+                                        player: notifier.all![index],
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                             ),
                             separatorBuilder: (_, index) => Container(
