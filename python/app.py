@@ -121,6 +121,7 @@ def players():
     team = request.args.get('team')
     pos = request.args.get('position')
     search = request.args.get('search')
+    sort = request.args.get('sort')
 
     regex_exc = "loan|transfer|join|left|contract|retire"
     col_shift = 3
@@ -137,7 +138,6 @@ def players():
 
     df = df_aggregated[df_aggregated['id_player'].isin(valids)].copy()
     df["actual"] = df_aggregated.iloc[:, 189 + col_shift + gw_start:189 + col_shift + gw_end].sum(axis=1)
-    df.sort_values(by=["actual"], ascending=False, inplace=True)
 
     if pos is not None:
         df = df[df["position"] == pos]
@@ -148,6 +148,23 @@ def players():
             (df["name"].apply(lambda x: unidecode(x)).str.contains(search, case=False))
             | df["web_name"].apply(lambda x: unidecode(x)).str.contains(
                 search, case=False)]
+    if isinstance(sort, str):
+        if sort == 'name-ASC':
+            df.sort_values(by=["name"], ascending=True, inplace=True)
+        elif sort == 'name-DESC':
+            df.sort_values(by=["name"], ascending=False, inplace=True)
+        elif sort == 'web_name-ASC':
+            df.sort_values(by=["web_name"], ascending=True, inplace=True)
+        elif sort == 'web_name-DESC':
+            df.sort_values(by=["web_name"], ascending=False, inplace=True)
+        elif sort == 'cost-ASC':
+            df.sort_values(by=["now_cost"], ascending=True, inplace=True)
+        elif sort == 'cost-DESC':
+            df.sort_values(by=["now_cost"], ascending=False, inplace=True)
+        else:
+            df.sort_values(by=["actual"], ascending=False, inplace=True)
+    else:
+        df.sort_values(by=["actual"], ascending=False, inplace=True)
 
     df = df.iloc[(page - 1) * limit:page * limit]
     df = df[["id_player", "name", "web_name", "code", "position", "now_cost", "team", "team_id", "shirt", "actual"]]
