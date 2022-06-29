@@ -1,4 +1,4 @@
-import 'package:caretaker_fpl/modules/home/data/models/get_informations_response_model.dart';
+import 'package:caretaker_fpl/modules/home/data/models/get_trivias_response_model.dart';
 import 'package:caretaker_fpl/modules/home/data/models/get_players_response_model.dart';
 import 'package:caretaker_fpl/modules/home/data/models/get_teams_response_model.dart';
 import 'package:dio/dio.dart';
@@ -9,7 +9,7 @@ import '../../../../common/errors/socket_error.dart';
 abstract class HomeRemoteDataSource {
   Future<GetTeamsResponseModel> getTeams();
 
-  Future<GetInformationsResponseModel> getInformations();
+  Future<GetTriviasResponseModel> getTrivias();
 
   Future<GetPlayersResponseModel> getPlayers({int? page, int? teams, String? position, String? search});
 }
@@ -34,11 +34,11 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   }
 
   @override
-  Future<GetInformationsResponseModel> getInformations() async {
+  Future<GetTriviasResponseModel> getTrivias() async {
     try {
-      final res = await _dio.get(ApiPathConstants.informations);
-      GetInformationsResponseModel responseModel =
-      GetInformationsResponseModel.fromJson(res.data);
+      final res = await _dio.get(ApiPathConstants.trivias);
+      GetTriviasResponseModel responseModel =
+      GetTriviasResponseModel.fromJson(res.data);
       return responseModel;
     } on DioError catch (e) {
       throw SocketError(
@@ -50,7 +50,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<GetPlayersResponseModel> getPlayers({int? page, int? teams, String? position, String? search}) async {
     Map<String, dynamic> query = {
-      "page": page ?? 1
+      "page": page ?? 1,
+      "limit": 24,
     };
 
     if (teams != null) {

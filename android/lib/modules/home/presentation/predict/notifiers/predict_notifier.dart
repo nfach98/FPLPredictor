@@ -14,21 +14,19 @@ class PredictNotifier extends ChangeNotifier {
   List<PlayerEntity>? players;
   bool isLoadingPlayers = true;
   String? errorPlayers;
+  bool isKeepLoading = true;
 
   int page = 1;
   int? teams;
   String? position;
   String? search;
-  double money = 100.0;
 
-  List<PlayerEntity?> selected = List.generate(15, (i) => null);
-
-  Future<void> getPlayers() async {
+  Future<void> getPlayers({int? page, String? position}) async {
     isLoadingPlayers = true;
     notifyListeners();
 
     final result = await _getPlayersUsecase.execute(GetPlayersParams(
-      page: page,
+      page: page ?? this.page,
       teams: teams,
       position: position,
       search: search,
@@ -37,35 +35,23 @@ class PredictNotifier extends ChangeNotifier {
     result.fold(
       (l) => errorPlayers = l.message,
       (r) {
-        if (players == null) {
+        if (players == null || page == 1) {
           players = r.players;
         } else {
           players!.addAll(r.players ?? []);
         }
 
-        page = r.next ?? 0;
+        this.page = r.next ?? 0;
+        isKeepLoading = (r.players?.length ?? 0) >= 12;
       }
     );
 
     isLoadingPlayers = false;
     notifyListeners();
   }
-  
-  addSelected(int at, PlayerEntity player) {
-    selected[at] = player;
-    money = money - (player.cost ?? 0);
-    notifyListeners();
-  }
 
-  removeSelected(int at, PlayerEntity player) {
-    selected[at] = null;
-    money = money + (player.cost ?? 0);
-    notifyListeners();
-  }
-
-  clearSelected() {
-    selected = List.generate(15, (i) => null);
-    money = 100.0;
+  setSearch(String? value) {
+    search = value;
     notifyListeners();
   }
 

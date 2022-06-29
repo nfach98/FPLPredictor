@@ -1,12 +1,12 @@
 import 'dart:collection';
 
-class InformationModel {
-  InformationModel({this.content, this.image});
+class TriviaModel {
+  TriviaModel({this.content, this.image});
 
   final String? content;
   final String? image;
 
-  factory InformationModel.fromJson(Map<String, dynamic> json) => InformationModel(
+  factory TriviaModel.fromJson(Map<String, dynamic> json) => TriviaModel(
     content: json['content'],
     image: json['image'],
   );

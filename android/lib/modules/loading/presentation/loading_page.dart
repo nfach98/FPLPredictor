@@ -32,18 +32,34 @@ class _LoadingPageState extends State<LoadingPage> {
       if (widget.argument.trivias != null) {
         _loadingNotifier.setTrivias(widget.argument.trivias!);
       }
-      _loadingNotifier.getRecommend(teams: widget.argument.teams).whenComplete(() {
-        if (_loadingNotifier.starting != null && _loadingNotifier.sub != null) {
-          Navigator.pushReplacementNamed(
-            context,
-            RouteConstants.squad,
-            arguments: SquadPageArguments(
-              starting: _loadingNotifier.starting,
-              sub: _loadingNotifier.sub,
-            )
-          );
-        }
-      });
+
+      if (widget.argument.type == 'recommend') {
+        _loadingNotifier.getRecommendation(teams: widget.argument.teams).whenComplete(() {
+          if (_loadingNotifier.starting != null && _loadingNotifier.sub != null) {
+            Navigator.pushReplacementNamed(
+              context,
+              RouteConstants.squad,
+              arguments: SquadPageArguments(
+                starting: _loadingNotifier.starting,
+                sub: _loadingNotifier.sub,
+              ),
+            );
+          }
+        });
+      } else if (widget.argument.type == 'predict' && widget.argument.players != null) {
+        _loadingNotifier.getPrediction(players: widget.argument.players!).whenComplete(() {
+          if (_loadingNotifier.starting != null && _loadingNotifier.sub != null) {
+            Navigator.pushReplacementNamed(
+              context,
+              RouteConstants.squad,
+              arguments: SquadPageArguments(
+                starting: _loadingNotifier.starting,
+                sub: _loadingNotifier.sub,
+              ),
+            );
+          }
+        });
+      }
     });
   }
 
