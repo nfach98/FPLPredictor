@@ -88,6 +88,7 @@ class HomeNotifier with ChangeNotifier {
   Future<void> getPlayers({int? page, String? position}) async {
     if (searchPosition != position) {
       this.page = 1;
+      searches = null;
     }
 
     isLoadingPlayers = true;
@@ -118,6 +119,11 @@ class HomeNotifier with ChangeNotifier {
     );
 
     isLoadingPlayers = false;
+    notifyListeners();
+  }
+
+  resetPlayers() {
+    searches = null;
     notifyListeners();
   }
 

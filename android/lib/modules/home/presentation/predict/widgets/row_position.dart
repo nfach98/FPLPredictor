@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../../../common/constants/route_constants.dart';
 import '../../../../loading/domain/entities/player_entity.dart';
 import '../../home/notifiers/home_notifier.dart';
+import '../player_select_page.dart';
 
 class RowPosition extends StatelessWidget {
   final List<PlayerEntity?>? players;
@@ -24,33 +25,6 @@ class RowPosition extends StatelessWidget {
         child: ItemPlayerPitch(
           player: e,
           onTap: () {
-            // context.read<HomeNotifier>().getPlayers(
-            //   position: position,
-            //   page: 1,
-            // ).then((value) {
-            //   Navigator.pop(context);
-            //   if (value != null) {
-            //
-            // showModalBottomSheet(
-            //   isScrollControlled: true,
-            //   context: context,
-            //   builder: (_) => BottomSheetPlayer(
-            //     selected: selected,
-            //     position: position,
-            //     searches: value,
-            //     onUpdate: (player) {
-            //       if (player != null) {
-            //         context.read<HomeNotifier>().addSelected(
-            //             getStartingIndexSelected() + (players?.indexOf(e) ?? 0),
-            //             player
-            //         );
-            //         Navigator.pop(context);
-            //       }
-            //     },
-            //   ),
-            // );
-            //   }
-            // });
             Navigator.pushNamed(
               context,
               RouteConstants.playerSelect,
