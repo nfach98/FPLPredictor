@@ -5,4 +5,5 @@ class RouteConstants {
   static const String home = '/home';
   static const String loading = '/loading';
   static const String squad = '/squad';
+  static const String playerSelect = '/player-select';
 }

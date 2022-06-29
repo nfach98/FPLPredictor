@@ -1,3 +1,5 @@
+import 'package:caretaker_fpl/modules/home/presentation/predict/arguments/player_select_page_arguments.dart';
+import 'package:caretaker_fpl/modules/home/presentation/predict/player_select_page.dart';
 import 'package:caretaker_fpl/modules/loading/presentation/loading_page.dart';
 import 'package:caretaker_fpl/modules/splash/presentation/splash_screen_page.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/arguments/loading_page_arguments.dart';
@@ -18,6 +20,10 @@ class AppRouter {
           transitionDuration: Duration.zero,
           reverseTransitionDuration: Duration.zero,
         );
+      case RouteConstants.playerSelect:
+        return MaterialPageRoute(builder: (_) => PlayerSelectPage(
+          argument: routeSettings.arguments as PlayerSelectPageArguments
+        ));
       case RouteConstants.loading:
         return MaterialPageRoute(builder: (_) => LoadingPage(
           argument: routeSettings.arguments as LoadingPageArguments

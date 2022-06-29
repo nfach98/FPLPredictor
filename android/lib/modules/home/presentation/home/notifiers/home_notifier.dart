@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:caretaker_fpl/modules/home/domain/entities/trivia_entity.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
 import 'package:caretaker_fpl/modules/home/domain/usecases/get_trivias_usecase.dart';
@@ -35,7 +37,7 @@ class HomeNotifier with ChangeNotifier {
   List<PlayerEntity>? searches;
   bool isLoadingPlayers = true;
   String? errorPlayers;
-  bool isKeepLoading = true;
+  bool isKeepLoadingPlayers = true;
 
   int page = 1;
   int? searchTeams;
@@ -85,7 +87,7 @@ class HomeNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<PlayerEntity>?> getPlayers({int? page, String? position}) async {
+  Future<void> getPlayers({int? page, String? position}) async {
     isLoadingPlayers = true;
     notifyListeners();
 
@@ -106,14 +108,12 @@ class HomeNotifier with ChangeNotifier {
         }
 
         this.page = r.next ?? 0;
-        isKeepLoading = (r.players?.length ?? 0) >= 12;
+        isKeepLoadingPlayers = (r.players?.length ?? 0) >= 12;
       }
     );
 
     isLoadingPlayers = false;
     notifyListeners();
-
-    return searches;
   }
 
   setActiveTab(int value){
@@ -154,7 +154,7 @@ class HomeNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  setSearch(String? value) {
+  Future<void> setSearch(String? value) async {
     search = value;
     notifyListeners();
   }

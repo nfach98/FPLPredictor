@@ -4,11 +4,15 @@ import 'package:caretaker_fpl/common/utils/extensions.dart';
 import 'package:caretaker_fpl/modules/loading/domain/entities/player_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../../home/notifiers/home_notifier.dart';
 
 class DialogPlayer extends StatelessWidget {
   final PlayerEntity? player;
+  final int? index;
 
-  const DialogPlayer({Key? key, required this.player}) : super(key: key);
+  const DialogPlayer({Key? key, required this.player, this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -188,13 +192,18 @@ class DialogPlayer extends StatelessWidget {
                     SizedBox(height: 8.h),
                   ],
                 ),
-                FractionallySizedBox(
+                if (index != null) FractionallySizedBox(
                   widthFactor: 1,
                   child: Padding(
                     padding: EdgeInsets.only(top: 12.h),
                     child: TextButton(
                       onPressed: () {
-
+                        if (player != null) {
+                          context.read<HomeNotifier>().removeSelected(
+                            index!, player!
+                          );
+                          Navigator.pop(context);
+                        }
                       },
                       child: const Text('Remove Player'),
                     ),
