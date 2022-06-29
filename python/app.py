@@ -6,6 +6,7 @@ import json
 import pulp
 import random
 import requests
+from unidecode import unidecode
 from flask import Flask, jsonify, request
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
@@ -136,15 +137,18 @@ def players():
 
     df = df_aggregated[df_aggregated['id_player'].isin(valids)].copy()
     df["actual"] = df_aggregated.iloc[:, 189 + col_shift + gw_start:189 + col_shift + gw_end].sum(axis=1)
-    df.sort_values(by=["actual"], ascending=False)
+    df.sort_values(by=["actual"], ascending=False, inplace=True)
 
     if pos is not None:
         df = df[df["position"] == pos]
     if team is not None:
         df = df[df["team_id"] == team]
     if search is not None:
-        df = df[(df["name"].str.contains(search, case=False)) | df["web_name"].str.contains(search, case=False)]
-    
+        df = df[
+            (df["name"].apply(lambda x: unidecode(x)).str.contains(search, case=False))
+            | df["web_name"].apply(lambda x: unidecode(x)).str.contains(
+                search, case=False)]
+
     df = df.iloc[(page - 1) * limit:page * limit]
     df = df[["id_player", "name", "web_name", "code", "position", "now_cost", "team", "team_id", "shirt", "actual"]]
 
