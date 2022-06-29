@@ -1,6 +1,6 @@
 import 'package:caretaker_fpl/common/config/themes.dart';
 import 'package:caretaker_fpl/common/constants/route_constants.dart';
-import 'package:caretaker_fpl/modules/home/domain/entities/information_entity.dart';
+import 'package:caretaker_fpl/modules/home/domain/entities/trivia_entity.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
 import 'package:caretaker_fpl/modules/home/presentation/recommend/widgets/item_team.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +11,12 @@ import 'package:toast/toast.dart';
 
 import '../../../../injection_container.dart';
 import '../../../loading/presentation/arguments/loading_page_arguments.dart';
+import '../home/notifiers/home_notifier.dart';
 import 'notifiers/recommend_notifier.dart';
 
 class RecommendPage extends StatefulWidget {
   final List<TeamEntity>? teams;
-  final List<InformationEntity>? trivias;
+  final List<TriviaEntity>? trivias;
 
   const RecommendPage({Key? key, this.teams, this.trivias}) : super(key: key);
 
@@ -30,13 +31,12 @@ class _RecommendPageState extends State<RecommendPage> {
   void initState() {
     super.initState();
     _recommendNotifier = sl<RecommendNotifier>();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      _recommendNotifier.addTeam(0);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    List<int> selectedTeams = context.select((HomeNotifier n) => n.selectedTeams);
+
     return ChangeNotifierProvider.value(
       value: _recommendNotifier,
       builder: (_, child) => Consumer<RecommendNotifier>(
@@ -81,23 +81,21 @@ class _RecommendPageState extends State<RecommendPage> {
                         baseColor: Colors.grey,
                         child: ItemTeam(
                           isSelected: false,
-                          onTap: () {
-
-                          },
+                          onTap: () { },
                           team: null,
                         ),
                       );
                     }
 
                     return ItemTeam(
-                      isSelected: notifier.selectedTeams.contains(index),
+                      isSelected: selectedTeams.contains(index),
                       onTap: () {
-                        if (!notifier.selectedTeams.contains(index)) {
+                        if (!selectedTeams.contains(index)) {
                           if (index == 0) {
-                            _recommendNotifier.clearTeam();
-                            _recommendNotifier.addTeam(index);
+                            context.read<HomeNotifier>().clearTeam();
+                            context.read<HomeNotifier>().addTeam(index);
                           } else {
-                            if (notifier.selectedTeams.length == 5) {
+                            if (selectedTeams.length == 5) {
                               ToastContext().init(context);
                               Toast.show(
                                 'You have already choosen 5 teams',
@@ -108,14 +106,14 @@ class _RecommendPageState extends State<RecommendPage> {
                                 gravity: Toast.bottom,
                               );
                             } else {
-                              _recommendNotifier.removeTeam(0);
-                              _recommendNotifier.addTeam(index);
+                              context.read<HomeNotifier>().removeTeam(0);
+                              context.read<HomeNotifier>().addTeam(index);
                             }
                           }
                         } else if (index != 0) {
-                          _recommendNotifier.removeTeam(index);
-                          if (notifier.selectedTeams.isEmpty) {
-                            _recommendNotifier.addTeam(0);
+                          context.read<HomeNotifier>().removeTeam(index);
+                          if (selectedTeams.isEmpty) {
+                            context.read<HomeNotifier>().addTeam(0);
                           }
                         }
                       },
@@ -136,7 +134,8 @@ class _RecommendPageState extends State<RecommendPage> {
                           context,
                           RouteConstants.loading,
                           arguments: LoadingPageArguments(
-                            teams: notifier.selectedTeams,
+                            'recommend',
+                            teams: selectedTeams,
                             trivias: widget.trivias,
                           ),
                         );

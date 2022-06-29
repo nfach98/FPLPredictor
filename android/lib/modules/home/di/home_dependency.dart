@@ -1,6 +1,6 @@
 import 'package:caretaker_fpl/modules/home/data/datasources/home_remote_data_source.dart';
 import 'package:caretaker_fpl/modules/home/domain/repositories/home_repository.dart';
-import 'package:caretaker_fpl/modules/home/domain/usecases/get_informations_usecase.dart';
+import 'package:caretaker_fpl/modules/home/domain/usecases/get_trivias_usecase.dart';
 import 'package:caretaker_fpl/modules/home/domain/usecases/get_players_usecase.dart';
 import 'package:caretaker_fpl/modules/home/domain/usecases/get_teams_usecase.dart';
 import 'package:caretaker_fpl/modules/home/presentation/predict/notifiers/predict_notifier.dart';
@@ -23,7 +23,8 @@ class InjectDependencyHome extends IconfigureDependencies {
   injectNotifier() {
     sl.registerFactory(() => HomeNotifier(
       getTeamsUsecase: sl(),
-      getInformationsUsecase: sl()
+      getTriviasUsecase: sl(),
+      getPlayersUsecase: sl(),
     ));
     sl.registerFactory(() => RecommendNotifier());
     sl.registerFactory(() => PredictNotifier(
@@ -45,7 +46,7 @@ class InjectDependencyHome extends IconfigureDependencies {
   @override
   injectUseCase() {
     sl.registerLazySingleton(() => GetTeamsUsecase(sl()));
-    sl.registerLazySingleton(() => GetInformationsUsecase(sl()));
+    sl.registerLazySingleton(() => GetTriviasUsecase(sl()));
     sl.registerLazySingleton(() => GetPlayersUsecase(sl()));
   }
 }

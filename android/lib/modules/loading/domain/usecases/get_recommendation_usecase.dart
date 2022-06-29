@@ -6,10 +6,10 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../common/errors/app_error.dart';
 
-class GetRecommendUsecase {
+class GetRecommendationUsecase {
   final LoadingRepository _repository;
 
-  GetRecommendUsecase(this._repository);
+  GetRecommendationUsecase(this._repository);
 
   Future<Either<AppError, GetRecommendEntity>> execute({List<int>? teams}) async {
     return _repository.getRecommend(teams: teams);

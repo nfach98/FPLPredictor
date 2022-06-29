@@ -1,8 +1,10 @@
-import '../../../home/domain/entities/information_entity.dart';
+import '../../../home/domain/entities/trivia_entity.dart';
 
 class LoadingPageArguments {
   final List<int>? teams;
-  final List<InformationEntity>? trivias;
+  final List<int>? players;
+  final List<TriviaEntity>? trivias;
+  final String type;
 
-  LoadingPageArguments({this.teams, this.trivias});
+  LoadingPageArguments(this.type, {this.teams, this.players, this.trivias});
 }

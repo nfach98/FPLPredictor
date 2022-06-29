@@ -1,6 +1,7 @@
 import 'package:caretaker_fpl/modules/loading/data/datasources/loading_remote_data_source.dart';
 import 'package:caretaker_fpl/modules/loading/data/repositories/loading_repository_impl.dart';
 import 'package:caretaker_fpl/modules/loading/domain/repositories/loading_repository.dart';
+import 'package:caretaker_fpl/modules/loading/domain/usecases/get_prediction_usecase.dart';
 import 'package:caretaker_fpl/modules/loading/domain/usecases/get_recommendation_usecase.dart';
 import 'package:caretaker_fpl/modules/loading/presentation/notifiers/loading_notifier.dart';
 
@@ -17,7 +18,10 @@ class InjectDependencyLoading extends IconfigureDependencies {
 
   @override
   injectNotifier() {
-    sl.registerFactory(() => LoadingNotifier(getRecommendUsecase: sl()));
+    sl.registerFactory(() => LoadingNotifier(
+      getRecommendationUsecase: sl(),
+      getPredictionUsecase: sl(),
+    ));
   }
 
   @override
@@ -33,6 +37,7 @@ class InjectDependencyLoading extends IconfigureDependencies {
 
   @override
   injectUseCase() {
-    sl.registerLazySingleton(() => GetRecommendUsecase(sl()));
+    sl.registerLazySingleton(() => GetRecommendationUsecase(sl()));
+    sl.registerLazySingleton(() => GetPredictionUsecase(sl()));
   }
 }
