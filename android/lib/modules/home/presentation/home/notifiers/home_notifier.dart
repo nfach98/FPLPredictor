@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:caretaker_fpl/modules/home/domain/entities/trivia_entity.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
 import 'package:caretaker_fpl/modules/home/domain/usecases/get_trivias_usecase.dart';
@@ -107,9 +105,11 @@ class HomeNotifier with ChangeNotifier {
       (l) => errorPlayers = l.message,
       (r) {
         if (searches == null || this.page == 1 || page == 1) {
-          searches = r.players;
+          List<PlayerEntity> list = [...(r.players ?? [])];
+          searches = list;
         } else {
-          searches!.addAll(r.players ?? []);
+          List<PlayerEntity> list = [...(searches ?? []),...(r.players ?? [])];
+          searches = list;
         }
 
         this.page = r.next ?? 0;
@@ -127,17 +127,23 @@ class HomeNotifier with ChangeNotifier {
   }
 
   addTeam(int value) {
-    selectedTeams.add(value);
+    List<int> list = [...selectedTeams];
+    list.add(value);
+    selectedTeams = list;
     notifyListeners();
   }
 
   removeTeam(int value) {
-    selectedTeams.remove(value);
+    List<int> list = [...selectedTeams];
+    list.remove(value);
+    selectedTeams = list;
     notifyListeners();
   }
 
   clearTeam() {
-    selectedTeams.clear();
+    List<int> list = [...selectedTeams];
+    list.clear();
+    selectedTeams = list;
     notifyListeners();
   }
 

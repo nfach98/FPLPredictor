@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _tabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
       context.read<HomeNotifier>().getTeams();
-      // context.read<HomeNotifier>().getInformations();
+      context.read<HomeNotifier>().getInformations();
     });
   }
 

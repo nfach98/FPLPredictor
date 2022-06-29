@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:caretaker_fpl/modules/home/presentation/predict/arguments/player_select_page_arguments.dart';
 import 'package:caretaker_fpl/modules/home/presentation/predict/widgets/dialog_player.dart';
 import 'package:caretaker_fpl/modules/home/presentation/predict/widgets/item_player_search.dart';
@@ -36,6 +38,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
     bool isLoading = context.select((HomeNotifier n) => n).isLoadingPlayers;
     bool isKeepLoading = context.select((HomeNotifier n) => n).isKeepLoadingPlayers;
 
+    log(isLoading.toString(),name: 'load');
     return Scaffold(
       appBar: AppBar(
         title: Text(

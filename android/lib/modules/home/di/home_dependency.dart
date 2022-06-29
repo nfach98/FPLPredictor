@@ -27,9 +27,9 @@ class InjectDependencyHome extends IconfigureDependencies {
       getPlayersUsecase: sl(),
     ));
     sl.registerFactory(() => RecommendNotifier());
-    sl.registerFactory(() => PredictNotifier(
-      getPlayersUsecase: sl(),
-    ));
+    // sl.registerFactory(() => PredictNotifier(
+    //   getPlayersUsecase: sl(),
+    // ));
   }
 
   @override
