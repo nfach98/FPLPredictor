@@ -24,8 +24,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       context.read<HomeNotifier>().getPlayers(
-        position: widget.argument.position,
-        page: 1,
+        position: widget.argument.position
       );
     });
   }

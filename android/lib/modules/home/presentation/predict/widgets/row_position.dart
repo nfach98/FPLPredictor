@@ -51,7 +51,6 @@ class RowPosition extends StatelessWidget {
             // );
             //   }
             // });
-
             Navigator.pushNamed(
               context,
               RouteConstants.playerSelect,

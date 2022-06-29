@@ -261,10 +261,7 @@ def players():
     if team is not None:
         df = df[df["team_id"] == team]
     if search is not None:
-        df = df[
-            (df["name"].apply(lambda x: unidecode(x)).str.contains(search, case=False))
-            | df["web_name"].apply(lambda x: unidecode(x)).str.contains(
-                search, case=False)]
+        df = df[df["web_name"].apply(lambda x: unidecode(x)).str.contains(search, case=False)]
     if isinstance(sort, str):
         if sort == 'name-ASC':
             df.sort_values(by=["name"], ascending=True, inplace=True)

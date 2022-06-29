@@ -88,7 +88,12 @@ class HomeNotifier with ChangeNotifier {
   }
 
   Future<void> getPlayers({int? page, String? position}) async {
+    if (searchPosition != position) {
+      this.page = 1;
+    }
+
     isLoadingPlayers = true;
+    searchPosition = position;
     notifyListeners();
 
     final result = await _getPlayersUsecase.execute(GetPlayersParams(
@@ -101,7 +106,7 @@ class HomeNotifier with ChangeNotifier {
     result.fold(
       (l) => errorPlayers = l.message,
       (r) {
-        if (searches == null || page == 1) {
+        if (searches == null || this.page == 1 || page == 1) {
           searches = r.players;
         } else {
           searches!.addAll(r.players ?? []);
