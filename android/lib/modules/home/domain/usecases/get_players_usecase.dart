@@ -12,7 +12,7 @@ class GetPlayersUsecase {
   Future<Either<AppError, GetPlayersEntity>> execute(GetPlayersParams params) async {
     return _repository.getPlayers(
       page: params.page,
-      teams: params.teams,
+      team: params.team,
       position: params.position,
       search: params.search,
     );
@@ -21,9 +21,9 @@ class GetPlayersUsecase {
 
 class GetPlayersParams {
   final int? page;
-  final int? teams;
+  final int? team;
   final String? position;
   final String? search;
 
-  GetPlayersParams({this.page, this.teams, this.position, this.search});
+  GetPlayersParams({this.page, this.team, this.position, this.search});
 }

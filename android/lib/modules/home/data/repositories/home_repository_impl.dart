@@ -58,12 +58,12 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<AppError, GetPlayersEntity>> getPlayers({int? page, int? teams, String? position, String? search}) async {
+  Future<Either<AppError, GetPlayersEntity>> getPlayers({int? page, int? team, String? position, String? search}) async {
     try {
       GetPlayersResponseModel responseModel =
           await _remoteDataSource.getPlayers(
             page: page,
-            teams: teams,
+            team: team,
             position: position,
             search: search,
           );

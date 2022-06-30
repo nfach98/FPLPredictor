@@ -27,7 +27,7 @@ class PredictNotifier extends ChangeNotifier {
 
     final result = await _getPlayersUsecase.execute(GetPlayersParams(
       page: page ?? this.page,
-      teams: teams,
+      team: teams,
       position: position,
       search: search,
     ));

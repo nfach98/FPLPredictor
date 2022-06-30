@@ -5,6 +5,7 @@ import 'package:caretaker_fpl/modules/splash/presentation/splash_screen_page.dar
 import 'package:caretaker_fpl/modules/squad/presentation/arguments/loading_page_arguments.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/squad_page.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'common/constants/route_constants.dart';
 import 'modules/home/presentation/home/home_page.dart';
 import 'modules/loading/presentation/arguments/loading_page_arguments.dart';
@@ -15,15 +16,18 @@ class AppRouter {
       case RouteConstants.splashscreen:
         return MaterialPageRoute(builder: (_) => const SplashScreenPage());
       case RouteConstants.home:
-        return PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => const HomePage(),
-          transitionDuration: Duration.zero,
-          reverseTransitionDuration: Duration.zero,
+        return PageTransition(
+          type: PageTransitionType.scale,
+          alignment: Alignment.center,
+          child: const HomePage(),
         );
       case RouteConstants.playerSelect:
-        return MaterialPageRoute(builder: (_) => PlayerSelectPage(
-          argument: routeSettings.arguments as PlayerSelectPageArguments
-        ));
+        return PageTransition(
+          type: PageTransitionType.bottomToTop,
+          child: PlayerSelectPage(
+            argument: routeSettings.arguments as PlayerSelectPageArguments
+          ),
+        );
       case RouteConstants.loading:
         return MaterialPageRoute(builder: (_) => LoadingPage(
           argument: routeSettings.arguments as LoadingPageArguments

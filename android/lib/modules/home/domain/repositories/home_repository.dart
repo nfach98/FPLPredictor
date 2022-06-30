@@ -10,7 +10,7 @@ abstract class HomeRepository {
   Future<Either<AppError, GetTriviasEntity>> getTrivias();
   Future<Either<AppError, GetPlayersEntity>> getPlayers({
     int? page,
-    int? teams,
+    int? team,
     String? position,
     String? search,
   });

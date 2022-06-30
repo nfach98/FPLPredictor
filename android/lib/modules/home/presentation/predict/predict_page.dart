@@ -77,8 +77,8 @@ class _PredictPageState extends State<PredictPage> {
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headline2?.copyWith(
                           color: numSelected < 15
-                              ? FplTheme.colors.green
-                              : FplTheme.colors.red,
+                            ? FplTheme.colors.red
+                            : FplTheme.colors.green,
                         ),
                       ),
                     ],
@@ -100,9 +100,9 @@ class _PredictPageState extends State<PredictPage> {
                         money.toStringAsFixed(1),
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headline2?.copyWith(
-                          color: money > 10
-                              ? FplTheme.colors.green
-                              : FplTheme.colors.red,
+                          color: money > 0
+                            ? FplTheme.colors.green
+                            : FplTheme.colors.red,
                         ),
                       ),
                     ],

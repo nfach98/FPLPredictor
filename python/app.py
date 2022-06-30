@@ -372,7 +372,7 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
             valids.remove(v)
 
     df = df_master[df_master['id_player'].isin(valids)].copy()
-    df["actual"] = df_master.iloc[:, 189 + col_shift + gw_start:189 + col_shift + gw_end].sum(axis=1)
+    df["actual"] = df_master.iloc[:, 189 + col_shift + gw_start:189 + col_shift + gw_end + 1].sum(axis=1)
 
     # define linear optimalization
     solutions = []
@@ -386,7 +386,6 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
         ids = list(df_new["id_player"])
         costs = list(df_new["now_cost"])
 
-        fav_team = []
         constraint_team = [[1 if df_new.iloc[i]['team'] == t else 0 for i in range(len(pts))]
                            for t in df_teams["team_name"].values]
         pos_gk = [1 if df_new.iloc[i]['position'] == "GK" else 0 for i in range(len(pts))]
@@ -416,27 +415,13 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
         solutions.append((s, prob.objective.value()))
 
     # squad select
-    solutions_valid = []
-    for s in solutions:
-        n_team_included = 0
-        for t in fav_team:
-            tms = df[df["team_id"] == t]
-            pls = tms[tms["id_player"].isin(s[0])].copy()
-            if len(pls) > 0:
-                n_team_included += 1
-
-        if n_team_included == len(fav_team):
-            solutions_valid.append(s)
-
-    if len(solutions_valid) > 0:
-        n_solution = random.randint(0, len(solutions_valid) - 1)
-        players = df[df["id_player"].isin(solutions_valid[n_solution][0])].copy()
-    else:
-        n_solution = random.randint(0, 3)
-        players = df[df["id_player"].isin(solutions_valid[n_solution][0])].copy()
+    n_solution = random.randint(0, 3)
+    players = df[df["id_player"].isin(solutions[n_solution][0])].copy()
     players = players[
         ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual",
          "predicted"]]
+    print(fav_team)
+    print(players[players["team_id"].isin(fav_team)])
 
     # starting XI
     prob2 = pulp.LpProblem('MaxPoints', pulp.LpMaximize)

@@ -11,7 +11,7 @@ abstract class HomeRemoteDataSource {
 
   Future<GetTriviasResponseModel> getTrivias();
 
-  Future<GetPlayersResponseModel> getPlayers({int? page, int? teams, String? position, String? search});
+  Future<GetPlayersResponseModel> getPlayers({int? page, int? team, String? position, String? search});
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -48,15 +48,14 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   }
 
   @override
-  Future<GetPlayersResponseModel> getPlayers({int? page, int? teams, String? position, String? search}) async {
+  Future<GetPlayersResponseModel> getPlayers({int? page, int? team, String? position, String? search}) async {
     Map<String, dynamic> query = {
       "page": page ?? 1,
       "limit": 24,
     };
 
-    if (teams != null) {
-      query["teams"] = teams.toString().substring(1, teams.toString().length - 1)
-        .replaceAll(' ', '');
+    if (team != null && team > 0) {
+      query["teams"] = team;
     }
     if (position != null) {
       query["position"] = position;

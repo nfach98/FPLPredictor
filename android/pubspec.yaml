@@ -22,6 +22,7 @@ dependencies:
   get_it: ^7.2.0
   image_gallery_saver: ^1.7.1
   intl: ^0.17.0
+  page_transition: ^2.0.9
   path_provider:
   provider: ^6.0.3
   screenshot: ^1.2.3

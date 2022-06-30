@@ -38,7 +38,7 @@ class HomeNotifier with ChangeNotifier {
   bool isKeepLoadingPlayers = true;
 
   int page = 1;
-  int? searchTeams;
+  int? searchTeam;
   String? searchPosition;
   String? search;
 
@@ -97,26 +97,28 @@ class HomeNotifier with ChangeNotifier {
 
     final result = await _getPlayersUsecase.execute(GetPlayersParams(
       page: page ?? this.page,
-      teams: searchTeams,
+      team: searchTeam,
       position: position,
       search: search,
     ));
 
-    result.fold(
-      (l) => errorPlayers = l.message,
-      (r) {
-        if (searches == null || this.page == 1 || page == 1) {
-          List<PlayerEntity> list = [...(r.players ?? [])];
-          searches = list;
-        } else {
-          List<PlayerEntity> list = [...(searches ?? []),...(r.players ?? [])];
-          searches = list;
-        }
+    if (isKeepLoadingPlayers) {
+      result.fold(
+        (l) => errorPlayers = l.message,
+        (r) {
+          if (searches == null || this.page == 1 || page == 1) {
+            List<PlayerEntity> list = [...(r.players ?? [])];
+            searches = list;
+          } else {
+            List<PlayerEntity> list = [...(searches ?? []),...(r.players ?? [])];
+            searches = list;
+          }
 
-        this.page = r.next ?? 0;
-        isKeepLoadingPlayers = (r.players?.length ?? 0) >= 12;
-      }
-    );
+          this.page = r.next ?? 0;
+          isKeepLoadingPlayers = (r.players?.length ?? 0) >= 12;
+        }
+      );
+    }
 
     isLoadingPlayers = false;
     notifyListeners();
@@ -168,6 +170,11 @@ class HomeNotifier with ChangeNotifier {
   clearSelected() {
     selectedPlayers = List.generate(15, (i) => null);
     money = 100.0;
+    notifyListeners();
+  }
+
+  Future<void> setSearchTeam(int value) async {
+    searchTeam = value;
     notifyListeners();
   }
 
