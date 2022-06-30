@@ -27,6 +27,9 @@ class ItemPlayerList extends StatelessWidget {
               aspectRatio: 1,
               child: CachedNetworkImage(
                 imageUrl: getShirt(player?.shirt, player?.position),
+                errorWidget: (_, url, error) => CachedNetworkImage(
+                  imageUrl: 'https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png',
+                ),
                 fit: BoxFit.contain,
               ),
             ),

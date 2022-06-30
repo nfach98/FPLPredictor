@@ -43,6 +43,7 @@ class HomeNotifier with ChangeNotifier {
   String? search;
 
   List<PlayerEntity?> selectedPlayers = List.generate(15, (i) => null);
+  List<int> numberTeam = List.generate(20, (i) => 0);
   double money = 100.0;
 
   Future<void> getTeams() async {
@@ -127,6 +128,8 @@ class HomeNotifier with ChangeNotifier {
 
   resetPlayers() {
     searches = null;
+    numberTeam = List.generate(20, (i) => 0);
+    money = 100.0;
     notifyListeners();
   }
 
@@ -158,18 +161,21 @@ class HomeNotifier with ChangeNotifier {
 
   addSelected(int at, PlayerEntity player) {
     selectedPlayers[at] = player;
+    calcNumTeam();
     money = money - (player.cost ?? 0);
     notifyListeners();
   }
 
   removeSelected(int at, PlayerEntity player) {
     selectedPlayers[at] = null;
+    calcNumTeam();
     money = money + (player.cost ?? 0);
     notifyListeners();
   }
 
   clearSelected() {
     selectedPlayers = List.generate(15, (i) => null);
+    numberTeam = List.generate(20, (i) => 0);
     money = 100.0;
     notifyListeners();
   }
@@ -184,5 +190,14 @@ class HomeNotifier with ChangeNotifier {
     search = value;
     isKeepLoadingPlayers = true;
     notifyListeners();
+  }
+
+  calcNumTeam() {
+    for(int i = 1; i <= 20; i++){
+      var players = selectedPlayers.where((e) => int.parse(e?.teamId ?? '0') == i).toList();
+      if (players.isNotEmpty) {
+        numberTeam[i-1] = players.length;
+      }
+    }
   }
 }

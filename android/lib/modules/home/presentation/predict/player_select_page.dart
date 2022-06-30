@@ -3,10 +3,10 @@ import 'package:caretaker_fpl/common/widget/premier_league_loading.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
 import 'package:caretaker_fpl/modules/home/presentation/home/notifiers/home_notifier.dart';
 import 'package:caretaker_fpl/modules/home/presentation/widgets/dialog_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 import '../../../../common/config/themes.dart';
 import '../../../loading/domain/entities/player_entity.dart';
@@ -52,6 +52,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
     bool isKeepLoading = context.select((HomeNotifier n) => n).isKeepLoadingPlayers;
     int? team = context.select((HomeNotifier n) => n).searchTeam;
     List<TeamEntity>? teams = context.select((HomeNotifier n) => n).teams;
+    List<int>? numTeam = context.select((HomeNotifier n) => n).numberTeam;
 
     return Scaffold(
       appBar: AppBar(
@@ -181,6 +182,10 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
                     itemCount: searches?.length ?? 0,
                     itemBuilder: (_, index) {
                       PlayerEntity? player = searches?[index];
+                      int num = numTeam[int.parse(player?.teamId ?? '0') - 1];
+                      String? team = teams?.where((e) =>
+                        e.id == int.parse(player?.teamId ?? '0')
+                      ).toList()[0].teamName;
 
                       if (!(selected.map((e) => e?.id ?? 0).toList().contains(player?.id))) {
                         return Padding(
@@ -198,13 +203,24 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
                               );
                             },
                             onUpdate: () {
-                              if (player != null) {
+                              if (player != null && num < 3) {
                                 context.read<HomeNotifier>().addSelected(
                                   widget.argument.index,
                                   player,
                                 );
+                                Navigator.pop(context);
+                              } else {
+                                ToastContext().init(context);
+                                Toast.show(
+                                  'Too much player selected from $team',
+                                  duration: Toast.lengthShort,
+                                  backgroundColor: FplTheme.colors.red,
+                                  textStyle: Theme.of(context).textTheme.bodyText1?.copyWith(
+                                    color: FplTheme.colors.white,
+                                  ),
+                                  gravity: Toast.bottom,
+                                );
                               }
-                              Navigator.pop(context);
                             },
                             player: player,
                           ),

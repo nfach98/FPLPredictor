@@ -96,10 +96,10 @@ class _RecommendPageState extends State<RecommendPage> {
                       }
                     }
                   } else if (index != 0) {
-                    context.read<HomeNotifier>().removeTeam(index);
-                    if (selectedTeams.isEmpty) {
+                    if (selectedTeams.length == 1) {
                       context.read<HomeNotifier>().addTeam(0);
                     }
+                    context.read<HomeNotifier>().removeTeam(index);
                   }
                 },
                 team: teams[index],

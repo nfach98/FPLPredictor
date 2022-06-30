@@ -122,6 +122,9 @@ class DialogPlayer extends StatelessWidget {
                                 aspectRatio: 11/14,
                                 child: CachedNetworkImage(
                                   imageUrl: 'https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png',
+                                  errorWidget: (_, url, error) => CachedNetworkImage(
+                                    imageUrl: 'https://resources.premierleague.com/premierleague/photos/players/110x140/Photo-Missing.png',
+                                  ),
                                   fit: BoxFit.contain,
                                 ),
                               )

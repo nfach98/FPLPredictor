@@ -52,6 +52,13 @@ class ItemPlayerSearch extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12.w),
+          Text(
+            '£${player?.cost}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
+          SizedBox(width: 12.w),
           InkWell(
             onTap: onUpdate,
             child: CircleAvatar(
