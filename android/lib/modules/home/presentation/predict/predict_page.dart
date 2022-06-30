@@ -1,4 +1,3 @@
-import 'package:caretaker_fpl/modules/home/presentation/predict/widgets/row_position.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,8 +8,8 @@ import '../../../../common/constants/route_constants.dart';
 import '../../../loading/domain/entities/player_entity.dart';
 import '../../../loading/presentation/arguments/loading_page_arguments.dart';
 import '../../domain/entities/trivia_entity.dart';
-import '../../domain/entities/team_entity.dart';
 import '../home/notifiers/home_notifier.dart';
+import '../widgets/row_position.dart';
 
 class PredictPage extends StatefulWidget {
   const PredictPage({Key? key}) : super(key: key);
@@ -223,29 +222,31 @@ class _PredictPageState extends State<PredictPage> {
             },
           ),
         ),
-        if (selected.where((e) => e != null).length == 15) Material(
+        if (selected.where((e) => e != null).isNotEmpty) Material(
           elevation: 4.r,
           child: Padding(
-            padding: EdgeInsets.all(16.r),
-            child: FractionallySizedBox(
+            padding: const EdgeInsets.all(12).r,
+            child:FractionallySizedBox(
               widthFactor: 1,
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteConstants.loading,
-                    arguments: LoadingPageArguments(
-                      'predict',
-                      players: selected.map((e) => e?.id ?? 0).toList(),
-                      trivias: trivias,
-                    ),
-                  );
+                  if (selected.where((e) => e != null).length == 15) {
+                    Navigator.pushNamed(
+                      context,
+                      RouteConstants.loading,
+                      arguments: LoadingPageArguments(
+                        'predict',
+                        players: selected.map((e) => e?.id ?? 0).toList(),
+                        trivias: trivias,
+                      ),
+                    );
+                  }
                 },
                 child: const Text('Predict'),
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

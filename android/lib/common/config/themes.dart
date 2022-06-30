@@ -24,7 +24,7 @@ class FplTheme {
         textStyle: MaterialStateProperty.all(
           FplTheme.textStyles.headline3
         ),
-        padding: MaterialStateProperty.all(const EdgeInsets.all(16).r),
+        padding: MaterialStateProperty.all(const EdgeInsets.all(12).r),
       ),
     ),
   );

@@ -1,14 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:caretaker_fpl/common/config/themes.dart';
 import 'package:caretaker_fpl/common/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../loading/domain/entities/player_entity.dart';
+import '../../../loading/domain/entities/player_entity.dart';
 
-class ItemPlayerList extends StatelessWidget {
+class ItemPlayerSearch extends StatelessWidget {
   final PlayerEntity? player;
   final Function() onTap;
+  final Function() onUpdate;
 
-  const ItemPlayerList({Key? key, this.player, required this.onTap}) : super(key: key);
+  const ItemPlayerSearch({Key? key, this.player, required this.onTap, required this.onUpdate}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +52,16 @@ class ItemPlayerList extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12.w),
-          Text(
-            '${player?.ptsPredicted.toString()} pts',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyText2,
+          InkWell(
+            onTap: onUpdate,
+            child: CircleAvatar(
+              radius: 20.r,
+              backgroundColor: FplTheme.colors.red,
+              child: Icon(
+                Icons.add_rounded,
+                color: FplTheme.colors.white,
+              ),
+            ),
           ),
         ],
       ),

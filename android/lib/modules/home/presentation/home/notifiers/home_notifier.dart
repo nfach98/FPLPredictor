@@ -37,7 +37,7 @@ class HomeNotifier with ChangeNotifier {
   String? errorPlayers;
   bool isKeepLoadingPlayers = true;
 
-  int page = 1;
+  int searchPage = 1;
   int? searchTeam;
   String? searchPosition;
   String? search;
@@ -56,7 +56,7 @@ class HomeNotifier with ChangeNotifier {
       (r) {
         teams = r.teams;
         teams?.insert(0, const TeamEntity(
-          id: 0,
+          id: null,
           teamName: 'Any team',
         ));
       }
@@ -86,9 +86,10 @@ class HomeNotifier with ChangeNotifier {
   }
 
   Future<void> getPlayers({int? page, String? position}) async {
-    if (searchPosition != position) {
-      this.page = 1;
+    if (searchPosition != position || page == 1) {
+      searchPage = 1;
       searches = null;
+      isKeepLoadingPlayers = true;
     }
 
     isLoadingPlayers = true;
@@ -96,7 +97,7 @@ class HomeNotifier with ChangeNotifier {
     notifyListeners();
 
     final result = await _getPlayersUsecase.execute(GetPlayersParams(
-      page: page ?? this.page,
+      page: page ?? searchPage,
       team: searchTeam,
       position: position,
       search: search,
@@ -106,7 +107,7 @@ class HomeNotifier with ChangeNotifier {
       result.fold(
         (l) => errorPlayers = l.message,
         (r) {
-          if (searches == null || this.page == 1 || page == 1) {
+          if (searches == null || searchPage == 1 || page == 1) {
             List<PlayerEntity> list = [...(r.players ?? [])];
             searches = list;
           } else {
@@ -114,7 +115,7 @@ class HomeNotifier with ChangeNotifier {
             searches = list;
           }
 
-          this.page = r.next ?? 0;
+          searchPage = r.next ?? 0;
           isKeepLoadingPlayers = (r.players?.length ?? 0) >= 12;
         }
       );
@@ -173,13 +174,15 @@ class HomeNotifier with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setSearchTeam(int value) async {
+  Future<void> setSearchTeam(int? value) async {
     searchTeam = value;
+    isKeepLoadingPlayers = true;
     notifyListeners();
   }
 
   Future<void> setSearch(String? value) async {
     search = value;
+    isKeepLoadingPlayers = true;
     notifyListeners();
   }
 }

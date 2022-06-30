@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:caretaker_fpl/common/config/themes.dart';
 import 'package:caretaker_fpl/common/constants/route_constants.dart';
 import 'package:caretaker_fpl/common/utils/extensions.dart';
+import 'package:caretaker_fpl/common/widget/premier_league_loading.dart';
 import 'package:caretaker_fpl/modules/loading/presentation/notifiers/loading_notifier.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/arguments/loading_page_arguments.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -155,7 +156,10 @@ class _LoadingPageState extends State<LoadingPage> {
                                 style: Theme.of(context).textTheme.bodyText1,
                               ),
                               SizedBox(height: 32.h),
-                              CircularProgressIndicator(color: FplTheme.colors.white)
+                              PremierLeagueLoading(
+                                color: FplTheme.colors.white,
+                              ),
+                              // CircularProgressIndicator(color: FplTheme.colors.white)
                             ],
                           ),
                         ),

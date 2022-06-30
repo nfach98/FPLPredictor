@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:caretaker_fpl/common/config/themes.dart';
+import 'package:caretaker_fpl/modules/loading/domain/entities/player_entity.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/widgets/dialog_player.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/widgets/item_player_list.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/widgets/item_player_pitch.dart';
@@ -10,10 +12,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:toast/toast.dart';
 
+import '../../../common/widget/premier_league_loading.dart';
 import '../../../injection_container.dart';
 import 'arguments/loading_page_arguments.dart';
 import 'notifiers/squad_notifier.dart';
@@ -68,20 +73,28 @@ class _SquadPageState extends State<SquadPage> {
             actions: [
               IconButton(
                 onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (_) => Center(
+                      child: PremierLeagueLoading(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  );
                   _screenshotController.capture().then((value) async {
+                    final dir = await getApplicationDocumentsDirectory();
+                    final image = File('${dir.path}/'
+                      'fpl_${DateTime.now().microsecondsSinceEpoch}.png');
+                    image.writeAsBytesSync(value ?? Uint8List(0));
                     await ImageGallerySaver.saveImage(
                       value ?? Uint8List(0),
                       quality: 100,
                       name: 'fpl_${DateTime.now().microsecondsSinceEpoch}'
                     );
-                    ToastContext().init(context);
-                    Toast.show(
-                      'Your team is saved',
-                      duration: Toast.lengthShort,
-                      backgroundColor: Theme.of(context).primaryColor,
-                      textStyle: Theme.of(context).textTheme.bodyText1
-                        ?.copyWith(color: FplTheme.colors.white),
-                      gravity: Toast.bottom,
+                    Navigator.pop(context);
+                    Share.shareFiles(
+                      [image.path],
+                      text: 'Here it is my recommended FPL team by caretaker',
                     );
                   });
                 },
@@ -209,6 +222,13 @@ class _SquadPageState extends State<SquadPage> {
                                                   builder: (_) => DialogPlayer(
                                                     codeCaptain: notifier.captain,
                                                     player: e,
+                                                    isShowCaptain: false,
+                                                    onSetCaptain: () {
+                                                      if (e.code != null) {
+                                                        context.read<SquadNotifier>().setCaptain(e.code!);
+                                                        Navigator.pop(context);
+                                                      }
+                                                    },
                                                   ),
                                                 );
                                               },
@@ -243,10 +263,24 @@ class _SquadPageState extends State<SquadPage> {
                                   if (notifier.all?[index] != null) {
                                     showDialog(
                                       context: context,
-                                      builder: (_) => DialogPlayer(
-                                        codeCaptain: notifier.captain,
-                                        player: notifier.all![index],
-                                      ),
+                                      builder: (_) {
+                                        PlayerEntity? player = notifier.all?[index];
+
+                                        if (player != null) {
+                                          return DialogPlayer(
+                                            codeCaptain: notifier.captain,
+                                            player: player,
+                                            onSetCaptain: () {
+                                              if (player.code != null) {
+                                                notifier.setCaptain(player.code!);
+                                                Navigator.pop(context);
+                                              }
+                                            },
+                                          );
+                                        }
+
+                                        return Container();
+                                      },
                                     );
                                   }
                                 },

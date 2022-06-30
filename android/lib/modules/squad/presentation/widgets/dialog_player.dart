@@ -2,14 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:caretaker_fpl/common/config/themes.dart';
 import 'package:caretaker_fpl/common/utils/extensions.dart';
 import 'package:caretaker_fpl/modules/loading/domain/entities/player_entity.dart';
+import 'package:caretaker_fpl/modules/squad/presentation/notifiers/squad_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class DialogPlayer extends StatelessWidget {
   final PlayerEntity player;
-  final int codeCaptain;
+  final int? codeCaptain;
+  final Function()? onSetCaptain;
+  final bool isShowCaptain;
 
-  const DialogPlayer({Key? key, required this.player, required this.codeCaptain}) : super(key: key);
+  const DialogPlayer({Key? key, required this.player, this.codeCaptain, this.onSetCaptain, this.isShowCaptain = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -185,30 +189,32 @@ class DialogPlayer extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 8.h),
-                if (codeCaptain != player.code) FractionallySizedBox(
+                if (codeCaptain != player.code && isShowCaptain) FractionallySizedBox(
                   widthFactor: 1,
                   child: Padding(
                     padding: EdgeInsets.only(top: 12.h),
                     child: TextButton(
                       onPressed: () {
-
+                        if (onSetCaptain != null) {
+                          onSetCaptain!();
+                        }
                       },
                       child: const Text('Select As Captain'),
                     ),
                   ),
                 ),
-                FractionallySizedBox(
-                  widthFactor: 1,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 12.h),
-                    child: TextButton(
-                      onPressed: () {
-
-                      },
-                      child: const Text('View Information'),
-                    ),
-                  ),
-                ),
+                // FractionallySizedBox(
+                //   widthFactor: 1,
+                //   child: Padding(
+                //     padding: EdgeInsets.only(top: 12.h),
+                //     child: TextButton(
+                //       onPressed: () {
+                //
+                //       },
+                //       child: const Text('View Information'),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           )

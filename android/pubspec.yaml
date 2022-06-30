@@ -25,6 +25,7 @@ dependencies:
   page_transition: ^2.0.9
   path_provider:
   provider: ^6.0.3
+  share_plus: ^4.0.10
   screenshot: ^1.2.3
   shimmer: ^2.0.0
   toast: ^0.3.0

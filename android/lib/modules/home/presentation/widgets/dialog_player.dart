@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../home/notifiers/home_notifier.dart';
+import '../home/notifiers/home_notifier.dart';
 
 class DialogPlayer extends StatelessWidget {
   final PlayerEntity? player;

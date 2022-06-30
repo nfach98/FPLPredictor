@@ -16,7 +16,7 @@ class SquadNotifier extends ChangeNotifier {
   List<PlayerEntity>? startDef;
   List<PlayerEntity>? startMid;
   List<PlayerEntity>? startFwd;
-  int captain = 0;
+  int? captain;
 
   setStarting(List<PlayerEntity> value) {
     starting = [];
@@ -47,16 +47,14 @@ class SquadNotifier extends ChangeNotifier {
     if (all != null) {
       List<PlayerEntity> dat = [...all!];
       dat.sort((a, b) => b.ptsPredicted?.compareTo(a.ptsPredicted ?? 0) ?? 0);
-      var highest = dat[0].ptsPredicted ?? 0 * 2;
       captain = dat[0].code ?? 0;
 
       totalPredicted = 0;
-      dat.sublist(1, 12).forEach((e) {
-        totalPredicted = dat.indexOf(e) == 0
+      dat.sublist(0, 12).forEach((e) {
+        totalPredicted = e.code == captain
           ? (totalPredicted ?? 0) + (e.ptsPredicted ?? 0) * 2
           : (totalPredicted ?? 0) + (e.ptsPredicted ?? 0);
       });
-      totalPredicted = (totalPredicted ?? 0) + highest;
     }
 
     notifyListeners();
@@ -64,6 +62,21 @@ class SquadNotifier extends ChangeNotifier {
 
   setActiveTab(int value) {
     activeTab = value;
+    notifyListeners();
+  }
+
+  setCaptain(int value) {
+    List<PlayerEntity> dat = [...all!];
+    dat.sort((a, b) => b.ptsPredicted?.compareTo(a.ptsPredicted ?? 0) ?? 0);
+    captain = value;
+
+    totalPredicted = 0;
+    dat.sublist(0, 12).forEach((e) {
+      totalPredicted = e.code == captain
+        ? (totalPredicted ?? 0) + (e.ptsPredicted ?? 0) * 2
+        : (totalPredicted ?? 0) + (e.ptsPredicted ?? 0);
+    });
+    print(totalPredicted);
     notifyListeners();
   }
 }

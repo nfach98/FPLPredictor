@@ -1,14 +1,16 @@
 import 'package:caretaker_fpl/common/utils/extensions.dart';
+import 'package:caretaker_fpl/common/widget/premier_league_loading.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
 import 'package:caretaker_fpl/modules/home/presentation/home/notifiers/home_notifier.dart';
-import 'package:caretaker_fpl/modules/home/presentation/predict/widgets/dialog_player.dart';
-import 'package:caretaker_fpl/modules/home/presentation/predict/widgets/item_player_search.dart';
+import 'package:caretaker_fpl/modules/home/presentation/widgets/dialog_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../common/config/themes.dart';
 import '../../../loading/domain/entities/player_entity.dart';
+import '../widgets/item_player_search.dart';
 import 'arguments/player_select_page_arguments.dart';
 
 class PlayerSelectPage extends StatefulWidget {
@@ -48,13 +50,15 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
     List<PlayerEntity>? searches = context.select((HomeNotifier n) => n.searches);
     bool isLoading = context.select((HomeNotifier n) => n).isLoadingPlayers;
     bool isKeepLoading = context.select((HomeNotifier n) => n).isKeepLoadingPlayers;
+    int? team = context.select((HomeNotifier n) => n).searchTeam;
+    List<TeamEntity>? teams = context.select((HomeNotifier n) => n).teams;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Player Selection',
           style: Theme.of(context).textTheme.headline2?.copyWith(
-              color: FplTheme.colors.white
+            color: FplTheme.colors.white
           ),
         ),
         flexibleSpace: Image.asset(
@@ -104,13 +108,15 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
                 suffixIcon: IconButton(
                   splashRadius: 2.r,
                   onPressed: () {
-                    _searchController.clear();
-                    context.read<HomeNotifier>().setSearch(null).whenComplete(() {
-                      context.read<HomeNotifier>().getPlayers(
-                        position: widget.argument.position,
-                        page: 1,
-                      );
-                    });
+                    if (_searchController.text.isNotEmpty) {
+                      _searchController.clear();
+                      context.read<HomeNotifier>().setSearch(null).whenComplete(() {
+                        context.read<HomeNotifier>().getPlayers(
+                          position: widget.argument.position,
+                          page: 1,
+                        );
+                      });
+                    }
                   },
                   icon: Icon(
                     Icons.close_rounded,
@@ -124,66 +130,108 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
             ),
           ),
           SizedBox(height: 12.h),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 12.w,
+            ),
+            child: FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.zero,
+                  border: Border.all(
+                    color: FplTheme.colors.dark,
+                  ),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<int?>(
+                    value: team,
+                    onChanged: (value) {
+                      setState(() {
+                        context.read<HomeNotifier>().setSearchTeam(value).whenComplete(() {
+                          context.read<HomeNotifier>().getPlayers(
+                            position: widget.argument.position,
+                            page: 1,
+                          );
+                        });
+                      });
+                    },
+                    items: teams?.map((e) => DropdownMenuItem(
+                      value: e.id,
+                      child: Text(
+                        e.teamName ?? '',
+                        style: Theme.of(context).textTheme.bodyText1,
+                      )
+                    )).toList(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 12.h),
           Expanded(
             child: SingleChildScrollView(
               controller: _scrollController,
               child: Column(
                 children: [
-                  if (searches != null) ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: searches.length,
-                      itemBuilder: (_, index) {
-                        PlayerEntity? player = searches[index];
+                  if (!isLoading || searches != null) ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: searches?.length ?? 0,
+                    itemBuilder: (_, index) {
+                      PlayerEntity? player = searches?[index];
 
-                        if (!(selected.map((e) => e?.id ?? 0).toList().contains(player.id))) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 4.h,
-                            ),
-                            child: ItemPlayerSearch(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => DialogPlayer(
-                                    player: player,
-                                  ),
-                                );
-                              },
-                              onUpdate: () {
+                      if (!(selected.map((e) => e?.id ?? 0).toList().contains(player?.id))) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 4.h,
+                          ),
+                          child: ItemPlayerSearch(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => DialogPlayer(
+                                  player: player,
+                                ),
+                              );
+                            },
+                            onUpdate: () {
+                              if (player != null) {
                                 context.read<HomeNotifier>().addSelected(
                                   widget.argument.index,
                                   player,
                                 );
-                                Navigator.pop(context);
-                              },
-                              player: player,
-                            ),
-                          );
-                        }
-
-                        return Container();
-                      },
-                      separatorBuilder: (_, index) {
-                        PlayerEntity? player = searches[index];
-
-                        if (!(selected.map((e) => e?.id ?? 0).toList().contains(player.id))) {
-                          return Container(
-                            margin: EdgeInsets.symmetric(vertical: 4.h),
-                            height: 1,
-                            color: FplTheme.colors.gray,
-                          );
-                        }
-
-                        return Container();
+                              }
+                              Navigator.pop(context);
+                            },
+                            player: player,
+                          ),
+                        );
                       }
+
+                      return Container();
+                    },
+                    separatorBuilder: (_, index) {
+                      PlayerEntity? player = searches?[index];
+
+                      if (!(selected.map((e) => e?.id ?? 0).toList().contains(player?.id))) {
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 4.h),
+                          height: 1,
+                          color: FplTheme.colors.gray,
+                        );
+                      }
+
+                      return Container();
+                    }
                   ),
-                  if (isKeepLoading) Center(
+                  if (isLoading || isKeepLoading) Center(
                     child: Padding(
                       padding: const EdgeInsets.all(12).r,
-                      child: CircularProgressIndicator(
-                        color: FplTheme.colors.green,
+                      child: PremierLeagueLoading(
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -203,7 +251,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
           width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
-            vertical: 12,
+            vertical: 4,
           ).r,
           color: FplTheme.colors.yellow,
           child: Text(
@@ -219,7 +267,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
           width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
-            vertical: 12,
+            vertical: 4,
           ).r,
           color: FplTheme.colors.green,
           child: Text(
@@ -235,7 +283,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
           width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
-            vertical: 12,
+            vertical: 4,
           ).r,
           color: FplTheme.colors.blue,
           child: Text(
@@ -251,7 +299,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
           width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
-            vertical: 12,
+            vertical: 4,
           ).r,
           color: FplTheme.colors.red,
           child: Text(

@@ -28,6 +28,12 @@ class RowPosition extends StatelessWidget {
               builder: (_) => DialogPlayer(
                 codeCaptain: Provider.of<SquadNotifier>(context).captain,
                 player: e,
+                onSetCaptain: () {
+                  if (e.code != null) {
+                    context.read<SquadNotifier>().setCaptain(e.code!);
+                    Navigator.pop(context);
+                  }
+                },
               ),
             );
           },

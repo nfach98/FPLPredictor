@@ -55,7 +55,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     };
 
     if (team != null && team > 0) {
-      query["teams"] = team;
+      query["team"] = team;
     }
     if (position != null) {
       query["position"] = position;

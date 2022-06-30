@@ -2,17 +2,15 @@ import 'package:caretaker_fpl/common/config/themes.dart';
 import 'package:caretaker_fpl/common/constants/route_constants.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/trivia_entity.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
-import 'package:caretaker_fpl/modules/home/presentation/recommend/widgets/item_team.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toast/toast.dart';
 
-import '../../../../injection_container.dart';
 import '../../../loading/presentation/arguments/loading_page_arguments.dart';
 import '../home/notifiers/home_notifier.dart';
-import 'notifiers/recommend_notifier.dart';
+import '../widgets/item_team.dart';
 
 class RecommendPage extends StatefulWidget {
   const RecommendPage({Key? key}) : super(key: key);
@@ -112,7 +110,7 @@ class _RecommendPageState extends State<RecommendPage> {
         if (teams != null && trivias != null) Material(
           elevation: 4.r,
           child: Padding(
-            padding: EdgeInsets.all(16.r),
+            padding: EdgeInsets.all(12.r),
             child: FractionallySizedBox(
               widthFactor: 1,
               child: TextButton(
