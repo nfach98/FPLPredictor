@@ -239,6 +239,7 @@ def players():
     pos = request.args.get('position')
     search = request.args.get('search')
     sort = request.args.get('sort')
+    max_price = request.args.get('max_price')
 
     regex_exc = "loan|transfer|join|left|contract|retire"
     col_shift = 3
@@ -262,6 +263,8 @@ def players():
         df = df[df["team_id"] == team]
     if search is not None:
         df = df[df["web_name"].apply(lambda x: unidecode(x)).str.contains(search, case=False)]
+    if max_price is not None:
+        df = df[df["now_cost"] <= max_price]
     if isinstance(sort, str):
         if sort == 'name-ASC':
             df.sort_values(by=["name"], ascending=True, inplace=True)
@@ -403,15 +406,17 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
         prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
         for index, c in enumerate(constraint_team):
             if index + 1 in fav_team:
-                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) >= 1, "MaxTeam_More_" + str(index)
-                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_Less_" + str(index)
+                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
             else:
                 prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
 
         prob.solve()
         s = [int(var.name) for var in prob.variables() if var.value() == 1]
-        n_len = random.randint(1, 10)
-        selected = selected + s[:-n_len]
+        df_in_team = df_new[df_new["id_player"].isin(s)].copy()
+        df_in_team = df_in_team[~df_in_team["team_id"].isin(fav_team)]
+        s_no_fav = df_in_team["id_player"].tolist()
+        n_len = random.randint(1, len(s_no_fav)-1)
+        selected = selected + s_no_fav[:-n_len]
         solutions.append((s, prob.objective.value()))
 
     # squad select
@@ -420,8 +425,6 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
     players = players[
         ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual",
          "predicted"]]
-    print(fav_team)
-    print(players[players["team_id"].isin(fav_team)])
 
     # starting XI
     prob2 = pulp.LpProblem('MaxPoints', pulp.LpMaximize)

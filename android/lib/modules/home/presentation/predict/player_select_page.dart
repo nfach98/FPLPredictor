@@ -138,7 +138,9 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
             child: FractionallySizedBox(
               widthFactor: 1.0,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 8.w,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.zero,
                   border: Border.all(
@@ -165,6 +167,12 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
                         style: Theme.of(context).textTheme.bodyText1,
                       )
                     )).toList(),
+                    // selectedItemBuilder: (_) => team == null
+                    //     ? []
+                    //     : teams!.map<Widget>((e) => Text(
+                    //   e.teamName ?? '',
+                    //   style: Theme.of(context).textTheme.headline3,
+                    // )).toList(),
                   ),
                 ),
               ),

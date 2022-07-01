@@ -56,7 +56,9 @@ class ItemPlayerSearch extends StatelessWidget {
             '£${player?.cost}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyText2,
+            style: Theme.of(context).textTheme.bodyText2?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           SizedBox(width: 12.w),
           InkWell(
