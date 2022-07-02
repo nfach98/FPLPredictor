@@ -3,6 +3,7 @@ import 'package:caretaker_fpl/common/config/themes.dart';
 import 'package:caretaker_fpl/common/utils/extensions.dart';
 import 'package:caretaker_fpl/modules/loading/domain/entities/player_entity.dart';
 import 'package:caretaker_fpl/modules/squad/presentation/notifiers/squad_notifier.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +57,7 @@ class DialogPlayer extends StatelessWidget {
                 ),
                 SizedBox(height: 12.h),
                 AspectRatio(
-                  aspectRatio: 16/8,
+                  aspectRatio: 2,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4).r,
                     child: Stack(
@@ -206,18 +207,116 @@ class DialogPlayer extends StatelessWidget {
                     ),
                   ),
                 ),
-                // FractionallySizedBox(
-                //   widthFactor: 1,
-                //   child: Padding(
-                //     padding: EdgeInsets.only(top: 12.h),
-                //     child: TextButton(
-                //       onPressed: () {
-                //
-                //       },
-                //       child: const Text('View Information'),
-                //     ),
-                //   ),
-                // ),
+                SizedBox(height: 20.h),
+                Text(
+                  'Points Graph',
+                  style: Theme.of(context).textTheme.headline3,
+                ),
+                FractionallySizedBox(
+                  widthFactor: 1,
+                  child: AspectRatio(
+                    aspectRatio: 2,
+                    child: LineChart(
+                      LineChartData(
+                        lineTouchData: LineTouchData(
+                          handleBuiltInTouches: true,
+                          touchTooltipData: LineTouchTooltipData(
+                            tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+
+                          ),
+                        ),
+                        gridData: FlGridData(show: false),
+                        titlesData: FlTitlesData(
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 24.w,
+                              interval: 5,
+                              getTitlesWidget: (i, meta) {
+                                return SideTitleWidget(
+                                  axisSide: meta.axisSide,
+                                  child: Text(
+                                    i.toInt().toString(),
+                                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                                      fontSize: 8.0
+                                    )
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              getTitlesWidget: (i, meta) {
+                                if (i == i.roundToDouble()) {
+                                  return Text(
+                                    i.round().toString(),
+                                    style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                                      fontSize: 8.sp,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  );
+                                }
+
+                                return Container();
+                              },
+                              showTitles: true,
+                              interval: 5,
+                              reservedSize: 24.w,
+                            ),
+                          ),
+                        ),
+                        borderData: FlBorderData(
+                          show: true,
+                          border: const Border(
+                            bottom: BorderSide(color: Color(0xff4e4965), width: 2),
+                            left: BorderSide(color: Colors.transparent),
+                            right: BorderSide(color: Colors.transparent),
+                            top: BorderSide(color: Colors.transparent),
+                          ),
+                        ),
+                        lineBarsData: [
+                          LineChartBarData(
+                            color: FplTheme.colors.green,
+                            barWidth: 2,
+                            isStrokeCapRound: true,
+                            dotData: FlDotData(show: false),
+                            belowBarData: BarAreaData(show: false),
+                            spots: player.listActual?.asMap().entries.map(
+                              (e) => FlSpot(e.key.toDouble() + 1, e.value)
+                            ).toList(),
+                          ),
+                          LineChartBarData(
+                            color: FplTheme.colors.red,
+                            barWidth: 2,
+                            isStrokeCapRound: true,
+                            dotData: FlDotData(show: false),
+                            belowBarData: BarAreaData(
+                              show: false,
+                              color: const Color(0x00aa4cfc),
+                            ),
+                            spots: player.listPredicted?.asMap().entries.map(
+                              (e) => FlSpot(
+                                e.key.toDouble() + 1,
+                                double.parse(e.value.toStringAsFixed(2)),
+                              )
+                            ).toList(),
+                          ),
+                        ],
+                        minX: 1,
+                        maxX: 38,
+                      ),
+                      swapAnimationDuration: const Duration(milliseconds: 250),
+                      swapAnimationCurve: Curves.linear,
+                    ),
+                  )
+                ),
               ],
             ),
           )

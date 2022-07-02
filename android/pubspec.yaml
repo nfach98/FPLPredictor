@@ -17,6 +17,7 @@ dependencies:
   dartz: ^0.10.1
   dio: ^4.0.6
   equatable: ^2.0.3
+  fl_chart: ^0.55.0
   flutter_screenutil: 5.5.2
   flutter_svg: ^1.0.3
   get_it: ^7.2.0

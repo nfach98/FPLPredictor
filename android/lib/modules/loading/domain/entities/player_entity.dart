@@ -12,7 +12,9 @@ class PlayerEntity extends Equatable {
     this.code,
     this.cost,
     this.ptsActual,
-    this.ptsPredicted
+    this.ptsPredicted,
+    this.listActual,
+    this.listPredicted,
   });
 
   final int? id;
@@ -26,9 +28,12 @@ class PlayerEntity extends Equatable {
   final double? cost;
   final double? ptsActual;
   final double? ptsPredicted;
+  final List<double>? listActual;
+  final List<double>? listPredicted;
 
   @override
   List<Object?> get props => [
-    id, name, webName, position, team, teamId, shirt, code, cost, ptsActual, ptsPredicted
+    id, name, webName, position, team, teamId, shirt, code, cost,
+    ptsActual, ptsPredicted, listActual, listPredicted
   ];
 }

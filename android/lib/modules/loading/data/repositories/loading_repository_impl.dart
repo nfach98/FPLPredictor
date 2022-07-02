@@ -34,6 +34,8 @@ class LoadingRepositoryImpl implements LoadingRepository {
           shirt: e.shirt,
           ptsActual: e.ptsActual,
           ptsPredicted: e.ptsPredicted,
+          listActual: e.listActual,
+          listPredicted: e.listPredicted
         )).toList(),
         sub: responseModel.sub?.map((e) => PlayerEntity(
           id: e.id,
@@ -47,6 +49,8 @@ class LoadingRepositoryImpl implements LoadingRepository {
           shirt: e.shirt,
           ptsActual: e.ptsActual,
           ptsPredicted: e.ptsPredicted,
+          listActual: e.listActual,
+          listPredicted: e.listPredicted
         )).toList(),
         totalPredicted: responseModel.totalPredicted,
       ));

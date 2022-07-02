@@ -67,6 +67,9 @@ def recommend():
     X, y = split_sequences(scaled_train, n_steps)
     n_features = X.shape[2]
 
+    output_keys = ["id_player", "name", "web_name", "code", "team", "team_id", "position", 
+    "now_cost", "shirt", "actual", "predicted"]
+
     fav = request.args.get('teams')
     if isinstance(fav, str):
         fav = fav.split(',')
@@ -82,7 +85,17 @@ def recommend():
         df_teams=df_teams, df_raw=df_raw, df_master=df_master, col_shift=col_shift, fav_team=fav
     )
     results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
+    for i in range(len(results_starting)):
+        results_starting[i] = dict((key,value) for key, value in results_starting[i].items() if key in output_keys)
+        results_starting[i]["actual_list"] = starting.iloc[i,193:231].tolist()
+        results_starting[i]["predicted_list"] = starting.iloc[i,240:278].tolist()
+
     results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
+    for i in range(len(results_sub)):
+        results_sub[i] = dict((key,value) for key, value in results_sub[i].items() if key in output_keys)
+        results_sub[i]["actual_list"] = sub.iloc[i,193:231].tolist()
+        results_sub[i]["predicted_list"] = sub.iloc[i,240:278].tolist()
+    
     return jsonify({
         "starting": results_starting,
         "sub": results_sub,
@@ -242,7 +255,7 @@ def players():
     max_price = request.args.get('max_price')
 
     regex_exc = "loan|transfer|join|left|contract|retire"
-    col_shift = 3
+    col_shift = 2
     gw_start = 1
     gw_end = 38
 
@@ -354,6 +367,8 @@ def prediction(gw_start, gw_end, n_steps, n_features, season_end, scaler,
 
     preds = np.array(preds)
     preds_t = preds.transpose()
+    for i in range(len(preds)):
+        df_master["2021-22 GW" + str(i+1) + " predicted"] = preds[i]
     totals = [sum(p) for p in preds_t]
     df_master["predicted"] = np.round(totals, 3)
 
@@ -422,9 +437,9 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
     # squad select
     n_solution = random.randint(0, 3)
     players = df[df["id_player"].isin(solutions[n_solution][0])].copy()
-    players = players[
-        ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual",
-         "predicted"]]
+    # players = players[
+    #     ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual",
+    #      "predicted", "actual_list", "predicted_list"]]
 
     # starting XI
     prob2 = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
@@ -447,9 +462,9 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
 
     selected2 = [int(var.name) for var in prob2.variables() if var.value() == 1]
     starting = df[df["id_player"].isin(selected2)].copy()
-    starting = starting[
-        ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual",
-         "predicted"]]
+    # starting = starting[
+    #     ["id_player", "name", "web_name", "code", "team", "team_id", "position", "now_cost", "shirt", "actual",
+    #      "predicted", "actual_list", "predicted_list"]]
 
     # subs
     sub = players[~players["id_player"].isin(starting["id_player"].values)].copy()
