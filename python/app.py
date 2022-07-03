@@ -211,7 +211,20 @@ def predict():
     starting = df[df["id_player"].isin(selected2)].copy()
     sub = df[~df["id_player"].isin(starting["id_player"].values)].copy()
 
+    output_keys = ["id_player", "name", "web_name", "code", "team", "team_id", "position", 
+    "now_cost", "shirt", "actual", "predicted"]
+
     results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
+    for i in range(len(results_starting)):
+        results_starting[i] = dict((key,value) for key, value in results_starting[i].items() if key in output_keys)
+        results_starting[i]["actual_list"] = starting.iloc[i,193:231].tolist()
+        results_starting[i]["predicted_list"] = starting.iloc[i,240:278].tolist()
+
+    results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
+    for i in range(len(results_sub)):
+        results_sub[i] = dict((key,value) for key, value in results_sub[i].items() if key in output_keys)
+        results_sub[i]["actual_list"] = sub.iloc[i,193:231].tolist()
+        results_sub[i]["predicted_list"] = sub.iloc[i,240:278].tolist()
     results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     return jsonify({
         "starting": results_starting,
