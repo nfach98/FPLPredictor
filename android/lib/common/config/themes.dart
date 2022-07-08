@@ -18,6 +18,9 @@ class FplTheme {
       bodyText1: FplTheme.textStyles.bodyText1,
       bodyText2: FplTheme.textStyles.bodyText2,
     ),
+    appBarTheme: AppBarTheme(
+      foregroundColor: FplTheme.colors.dark,
+    ),
     textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(FplTheme.colors.purple),
@@ -42,7 +45,6 @@ class _Gradients {
   final greenBlueGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    stops: const [.7, 1],
     colors: [FplTheme.colors.green, FplTheme.colors.blue],
   );
 }

@@ -63,12 +63,18 @@ class ItemPlayerSearch extends StatelessWidget {
           SizedBox(width: 12.w),
           InkWell(
             onTap: onUpdate,
-            child: CircleAvatar(
-              radius: 20.r,
-              backgroundColor: FplTheme.colors.red,
-              child: Icon(
-                Icons.add_rounded,
-                color: FplTheme.colors.white,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: FplTheme.gradients.greenBlueGradient,
+              ),
+              child: CircleAvatar(
+                radius: 20.r,
+                backgroundColor: Colors.transparent,
+                child: Icon(
+                  Icons.add_rounded,
+                  color: FplTheme.colors.white,
+                ),
               ),
             ),
           ),
