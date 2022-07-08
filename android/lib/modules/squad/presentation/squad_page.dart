@@ -185,7 +185,7 @@ class _SquadPageState extends State<SquadPage> {
                                           child: FractionallySizedBox(
                                             widthFactor: 1.0,
                                             child: SvgPicture.asset(
-                                              'assets/images/bg_pitch.svg',
+                                              'assets/images/bg_pitch_new.svg',
                                               fit: BoxFit.cover,
                                             ),
                                           ),

@@ -42,23 +42,35 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         centerTitle: true,
         title: Text(
           'caretaker',
-          style: Theme.of(context).textTheme.headline1?.copyWith(
-            color: FplTheme.colors.white
-          ),
+          style: Theme.of(context).textTheme.headline1,
         ),
-        flexibleSpace: Image.asset(
-          'assets/images/bg_heading.png',
-          color: Theme.of(context).primaryColor,
-          fit: BoxFit.cover,
+        flexibleSpace: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: FplTheme.gradients.blueLavenderGradient
+              ),
+            ),
+            FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                alignment: Alignment.centerRight,
+                child: Image.asset(
+                  'assets/images/bg_fpl_new.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
+          ],
         ),
-        backgroundColor: FplTheme.colors.dark,
+        // backgroundColor: FplTheme.colors.dark,
         bottom: TabBar(
           controller: _tabController,
           tabs: [
             Tab(text: 'Recommend'),
             Tab(text: 'Predict'),
           ],
-          labelColor: FplTheme.colors.white,
+          labelColor: FplTheme.colors.dark,
           labelStyle: Theme.of(context).textTheme.headline3?.copyWith(
             fontSize: 14.sp,
           ),
@@ -67,7 +79,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             fontWeight: FontWeight.w300,
           ),
           indicatorWeight: 4.r,
-          indicatorColor: Theme.of(context).primaryColor,
+          indicatorColor: FplTheme.colors.purple,
         ),
       ),
       body: TabBarView(

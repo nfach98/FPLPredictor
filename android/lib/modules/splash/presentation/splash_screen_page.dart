@@ -69,7 +69,11 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
           top: 0,
           right: 0,
           bottom: 0,
-          child: Container(color: Theme.of(context).primaryColor),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: FplTheme.gradients.blueLavenderGradient
+            ),
+          ),
         ),
         Positioned(
           left: 0,
@@ -77,7 +81,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
           right: 0,
           bottom: 0,
           child: Image.asset(
-            'assets/images/bg_fpl.png',
+            'assets/images/bg_fpl_new.png',
             fit: BoxFit.cover,
           ),
         ),
@@ -109,7 +113,9 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
                                           child: SizedBox(
                                             height: context.screenHeight,
                                             child: Container(
-                                              color: Theme.of(context).primaryColor,
+                                              decoration: BoxDecoration(
+                                                gradient: FplTheme.gradients.greenBlueGradient
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -117,7 +123,9 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
                                     : SizedBox(
                                         height: context.screenHeight,
                                         child: Container(
-                                          color: Theme.of(context).primaryColor,
+                                          decoration: BoxDecoration(
+                                            gradient: FplTheme.gradients.greenBlueGradient
+                                          ),
                                         ),
                                       ),
                               ),

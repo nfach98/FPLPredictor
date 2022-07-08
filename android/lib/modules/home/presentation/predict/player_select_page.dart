@@ -58,16 +58,28 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
       appBar: AppBar(
         title: Text(
           'Player Selection',
-          style: Theme.of(context).textTheme.headline2?.copyWith(
-            color: FplTheme.colors.white
-          ),
+          style: Theme.of(context).textTheme.headline2,
         ),
-        flexibleSpace: Image.asset(
-          'assets/images/bg_heading.png',
-          color: Theme.of(context).primaryColor,
-          fit: BoxFit.cover,
+        flexibleSpace: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  gradient: FplTheme.gradients.blueLavenderGradient
+              ),
+            ),
+            FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                alignment: Alignment.centerRight,
+                child: Image.asset(
+                  'assets/images/bg_fpl_new.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
+          ],
         ),
-        backgroundColor: FplTheme.colors.dark,
+        // backgroundColor: FplTheme.colors.dark,
       ),
       body: Column(
         children: [

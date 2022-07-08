@@ -85,9 +85,8 @@ class _RecommendPageState extends State<RecommendPage> {
                         Toast.show(
                           'You have already choosen 5 teams',
                           duration: Toast.lengthShort,
-                          backgroundColor: Theme.of(context).primaryColor,
-                          textStyle: Theme.of(context).textTheme.bodyText1
-                              ?.copyWith(color: FplTheme.colors.white),
+                          backgroundColor: FplTheme.colors.purple,
+                          textStyle: Theme.of(context).textTheme.bodyText1,
                           gravity: Toast.bottom,
                         );
                       } else {

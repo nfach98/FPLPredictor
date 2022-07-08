@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FplTheme {
+  static final gradients = _Gradients();
   static final colors = _Colors();
   static final textStyles = _TextStyles();
   static final dimens = _Dimens();
@@ -19,14 +20,30 @@ class FplTheme {
     ),
     textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(FplTheme.colors.dark),
+        backgroundColor: MaterialStateProperty.all(FplTheme.colors.purple),
         foregroundColor: MaterialStateProperty.all(FplTheme.colors.white),
         textStyle: MaterialStateProperty.all(
-          FplTheme.textStyles.headline3
+          FplTheme.textStyles.headline3.copyWith(
+            fontSize: 14.sp,
+          ),
         ),
         padding: MaterialStateProperty.all(const EdgeInsets.all(12).r),
       ),
     ),
+  );
+}
+
+class _Gradients {
+  final blueLavenderGradient = LinearGradient(
+    begin: Alignment.bottomLeft,
+    end: Alignment.topRight,
+    colors: [FplTheme.colors.blue, FplTheme.colors.lavender],
+  );
+  final greenBlueGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    stops: const [.7, 1],
+    colors: [FplTheme.colors.green, FplTheme.colors.blue],
   );
 }
 
@@ -37,6 +54,7 @@ class _Colors {
   final blue = const Color(0xff04E8F6);
   final yellow = const Color(0xffE3F70A);
   final purple = const Color(0xff963CFF);
+  final lavender = const Color(0xff5D81FF);
   final gray = const Color(0xffEAEAE5);
   final white = const Color(0xffF9F9F9);
 }

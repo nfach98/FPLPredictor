@@ -122,7 +122,7 @@ class _PredictPageState extends State<PredictPage> {
                       child: FractionallySizedBox(
                         widthFactor: 1.0,
                         child: SvgPicture.asset(
-                          'assets/images/bg_pitch.svg',
+                          'assets/images/bg_pitch_new.svg',
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -167,7 +167,7 @@ class _PredictPageState extends State<PredictPage> {
               //           child: FractionallySizedBox(
               //             widthFactor: 1.0,
               //             child: SvgPicture.asset(
-              //               'assets/images/bg_pitch.svg',
+              //               'assets/images/bg_pitch_new.svg',
               //               fit: BoxFit.cover,
               //             ),
               //           ),

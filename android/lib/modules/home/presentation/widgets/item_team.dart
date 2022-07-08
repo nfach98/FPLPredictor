@@ -23,7 +23,7 @@ class ItemTeam extends StatelessWidget {
           ? null
           : Border.all(
             color: isSelected
-              ? Theme.of(context).primaryColor : FplTheme.colors.gray,
+              ? FplTheme.colors.purple : FplTheme.colors.gray,
             width: isSelected ? 4.0 : 2.0,
           ),
           borderRadius: BorderRadius.circular(4.r),
