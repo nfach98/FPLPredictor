@@ -3,6 +3,7 @@ import 'package:caretaker_fpl/common/widget/premier_league_loading.dart';
 import 'package:caretaker_fpl/modules/home/domain/entities/team_entity.dart';
 import 'package:caretaker_fpl/modules/home/presentation/home/notifiers/home_notifier.dart';
 import 'package:caretaker_fpl/modules/home/presentation/widgets/dialog_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
           children: [
             Container(
               decoration: BoxDecoration(
-                  gradient: FplTheme.gradients.blueLavenderGradient
+                gradient: FplTheme.gradients.blueLavenderGradient
               ),
             ),
             FractionallySizedBox(
@@ -82,6 +83,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
         // backgroundColor: FplTheme.colors.dark,
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 12.h),
           Padding(
@@ -284,66 +286,81 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
     switch(widget.argument.position) {
       case 'GK' :
         return Container(
-          width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
-            horizontal: 8,
+            horizontal: 12,
             vertical: 4,
           ).r,
-          color: FplTheme.colors.yellow,
+          decoration: BoxDecoration(
+            color: FplTheme.colors.dark,
+            borderRadius: BorderRadius.vertical(
+                bottom: const Radius.circular(8).r
+            ),
+          ),
           child: Text(
-            'Goalkeeper',
+            'Goalkeepers',
             style: Theme.of(context).textTheme.bodyText1?.copyWith(
+              color: FplTheme.colors.blue,
               fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
             ),
           ),
         );
       case 'DEF' :
         return Container(
-          width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
-            horizontal: 8,
+            horizontal: 12,
             vertical: 4,
           ).r,
-          color: FplTheme.colors.green,
+          decoration: BoxDecoration(
+            color: FplTheme.colors.dark,
+            borderRadius: BorderRadius.vertical(
+                bottom: const Radius.circular(8).r
+            ),
+          ),
           child: Text(
-            'Defender',
+            'Defenders',
             style: Theme.of(context).textTheme.bodyText1?.copyWith(
+              color: FplTheme.colors.blue,
               fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
             ),
           ),
         );
       case 'MID' :
         return Container(
-          width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
-            horizontal: 8,
+            horizontal: 12,
             vertical: 4,
           ).r,
-          color: FplTheme.colors.blue,
+          decoration: BoxDecoration(
+            color: FplTheme.colors.dark,
+            borderRadius: BorderRadius.vertical(
+              bottom: const Radius.circular(8).r
+            ),
+          ),
           child: Text(
-            'Midfielder',
+            'Midfielders',
             style: Theme.of(context).textTheme.bodyText1?.copyWith(
+              color: FplTheme.colors.blue,
               fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
             ),
           ),
         );
       case 'FWD' :
         return Container(
-          width: context.screenWidth,
           padding: const EdgeInsets.symmetric(
-            horizontal: 8,
+            horizontal: 12,
             vertical: 4,
           ).r,
-          color: FplTheme.colors.red,
+          decoration: BoxDecoration(
+            color: FplTheme.colors.dark,
+            borderRadius: BorderRadius.vertical(
+                bottom: const Radius.circular(8).r
+            ),
+          ),
           child: Text(
-            'Forward',
+            'Forwards',
             style: Theme.of(context).textTheme.bodyText1?.copyWith(
-              color: FplTheme.colors.white,
+              color: FplTheme.colors.blue,
               fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
             ),
           ),
         );

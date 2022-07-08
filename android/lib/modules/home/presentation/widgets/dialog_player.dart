@@ -27,9 +27,34 @@ class DialogPlayer extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                Image.asset(
-                  'assets/images/bg_fpl_new.png',
-                  fit: BoxFit.cover,
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Image.asset(
+                    'assets/images/bg_fpl_new.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withOpacity(0),
+                          Colors.white
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.6, 1],
+                      )
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(12).r,
@@ -142,7 +167,7 @@ class DialogPlayer extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(height: 12.h),
+                          // SizedBox(height: 12.h),
                           Material(
                             elevation: 4.r,
                             borderRadius: BorderRadius.circular(8).r,

@@ -53,7 +53,7 @@ class _Colors {
   final red = _Materialize.createMaterialColor(0xffFF2882);
   final green = _Materialize.createMaterialColor(0xff07E07E);
   final dark = const Color(0xff37003C);
-  final blue = const Color(0xff04E8F6);
+  final blue = _Materialize.createMaterialColor(0xff04E8F6);
   final yellow = const Color(0xffE3F70A);
   final purple = const Color(0xff963CFF);
   final lavender = const Color(0xff5D81FF);
