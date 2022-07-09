@@ -25,6 +25,8 @@ class _PredictPageState extends State<PredictPage> {
     int numSelected = selected.where((e) => e != null).length;
     double money = context.select((HomeNotifier n) => n.money);
     List<TriviaEntity>? trivias = context.select((HomeNotifier n) => n.trivias);
+    bool isFull = numSelected == 15;
+    bool isMoneyPositive = money > 0;
 
     return Column(
       children: [
@@ -87,7 +89,9 @@ class _PredictPageState extends State<PredictPage> {
                           '$numSelected / 15',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.headline2?.copyWith(
-                            color: FplTheme.colors.white,
+                            color: numSelected < 15
+                              ? FplTheme.colors.white
+                              : FplTheme.colors.dark,
                           ),
                         ),
                       ),
@@ -121,7 +125,9 @@ class _PredictPageState extends State<PredictPage> {
                           money.toStringAsFixed(1),
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.headline2?.copyWith(
-                            color: FplTheme.colors.white,
+                            color: money < 0
+                              ? FplTheme.colors.white
+                              : FplTheme.colors.dark,
                           ),
                         ),
                       ),
@@ -251,7 +257,7 @@ class _PredictPageState extends State<PredictPage> {
               widthFactor: 1,
               child: TextButton(
                 onPressed: () {
-                  if (selected.where((e) => e != null).length == 15) {
+                  if (isFull && isMoneyPositive) {
                     Navigator.pushNamed(
                       context,
                       RouteConstants.loading,
@@ -263,6 +269,20 @@ class _PredictPageState extends State<PredictPage> {
                     );
                   }
                 },
+                style: ButtonStyle(
+                  backgroundColor: isFull && isMoneyPositive
+                    ? MaterialStateProperty.all(FplTheme.colors.purple)
+                    : MaterialStateProperty.all(FplTheme.colors.gray),
+                  foregroundColor: isFull && isMoneyPositive
+                    ? MaterialStateProperty.all(FplTheme.colors.white)
+                    : MaterialStateProperty.all(FplTheme.colors.dark.withOpacity(0.2)),
+                  textStyle: MaterialStateProperty.all(
+                    FplTheme.textStyles.headline3.copyWith(
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                  padding: MaterialStateProperty.all(const EdgeInsets.all(12).r),
+                ),
                 child: const Text('Predict'),
               ),
             ),
