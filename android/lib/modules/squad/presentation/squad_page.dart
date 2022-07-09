@@ -60,16 +60,28 @@ class _SquadPageState extends State<SquadPage> {
           appBar: AppBar(
             title: Text(
               'Squad',
-              style: Theme.of(context).textTheme.headline2?.copyWith(
-                color: FplTheme.colors.white
-              ),
+              style: Theme.of(context).textTheme.headline2,
             ),
-            flexibleSpace: Image.asset(
-              'assets/images/bg_heading.png',
-              color: Theme.of(context).primaryColor,
-              fit: BoxFit.cover,
+            flexibleSpace: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: FplTheme.gradients.blueLavenderGradient
+                  ),
+                ),
+                FractionallySizedBox(
+                  widthFactor: 1.0,
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: Image.asset(
+                      'assets/images/bg_fpl_new_half.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              ],
             ),
-            backgroundColor: FplTheme.colors.dark,
+            // backgroundColor: FplTheme.colors.dark,
             actions: [
               IconButton(
                 onPressed: () async {
@@ -100,7 +112,6 @@ class _SquadPageState extends State<SquadPage> {
                 },
                 icon: Icon(
                   Icons.camera_alt_rounded,
-                  color: FplTheme.colors.white,
                 ),
               ),
             ],

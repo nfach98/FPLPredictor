@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Container(
                 alignment: Alignment.centerRight,
                 child: Image.asset(
-                  'assets/images/bg_fpl_new.png',
+                  'assets/images/bg_fpl_new_half.png',
                   fit: BoxFit.cover,
                 ),
               ),

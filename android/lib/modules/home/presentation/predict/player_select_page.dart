@@ -73,7 +73,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
               child: Container(
                 alignment: Alignment.centerRight,
                 child: Image.asset(
-                  'assets/images/bg_fpl_new.png',
+                  'assets/images/bg_fpl_new_half.png',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -99,7 +99,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
               controller: _searchController,
               onChanged: (value) {
                 context.read<HomeNotifier>().setSearch(
-                    value.isEmpty ? null : value
+                  value.isEmpty ? null : value
                 ).whenComplete(() {
                   context.read<HomeNotifier>().getPlayers(
                     position: widget.argument.position,
@@ -117,7 +117,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(0).r,
                   borderSide: BorderSide(
-                    color: FplTheme.colors.red,
+                    color: FplTheme.colors.purple,
                   ),
                 ),
                 suffixIcon: IconButton(

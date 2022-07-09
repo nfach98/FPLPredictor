@@ -51,7 +51,6 @@ class DialogPlayer extends StatelessWidget {
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        stops: const [0.6, 1],
                       )
                     ),
                   ),

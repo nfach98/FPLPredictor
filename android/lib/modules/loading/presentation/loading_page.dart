@@ -74,7 +74,7 @@ class _LoadingPageState extends State<LoadingPage> {
             Container(
               width: context.screenWidth,
               height: context.statusBarHeight,
-              color: FplTheme.colors.green,
+              color: Colors.transparent,
             ),
             Expanded(
               child: Stack(
@@ -85,7 +85,9 @@ class _LoadingPageState extends State<LoadingPage> {
                     right: 0,
                     bottom: 0,
                     child: Container(
-                      color: Theme.of(context).primaryColor,
+                      decoration: BoxDecoration(
+                        gradient: FplTheme.gradients.blueLavenderGradient
+                      ),
                     ),
                   ),
                   Positioned(
@@ -94,10 +96,29 @@ class _LoadingPageState extends State<LoadingPage> {
                     right: 0,
                     bottom: 0,
                     child: Image.asset(
-                      'assets/images/bg_fpl.png',
+                      'assets/images/bg_fpl_new.png',
                       fit: BoxFit.cover,
                     ),
                   ),
+                  // Positioned(
+                  //   left: 0,
+                  //   top: 0,
+                  //   right: 0,
+                  //   bottom: 0,
+                  //   child: Container(
+                  //     color: Theme.of(context).primaryColor,
+                  //   ),
+                  // ),
+                  // Positioned(
+                  //   left: 0,
+                  //   top: 0,
+                  //   right: 0,
+                  //   bottom: 0,
+                  //   child: Image.asset(
+                  //     'assets/images/bg_fpl.png',
+                  //     fit: BoxFit.cover,
+                  //   ),
+                  // ),
                   Positioned(
                     left: 0,
                     top: 0,
@@ -108,11 +129,11 @@ class _LoadingPageState extends State<LoadingPage> {
                         padding: const EdgeInsets.all(36).r,
                         child: Material(
                           elevation: 4.r,
-                          color: Colors.transparent,
+                          color: Colors.white.withOpacity(0.7),
+                          borderRadius: BorderRadius.circular(8).r,
                           child: Container(
                             width: context.screenWidth,
                             height: context.finalHeight,
-                            color: FplTheme.colors.green,
                           ),
                         ),
                       ),
@@ -157,7 +178,7 @@ class _LoadingPageState extends State<LoadingPage> {
                               ),
                               SizedBox(height: 32.h),
                               PremierLeagueLoading(
-                                color: FplTheme.colors.white,
+                                color: FplTheme.colors.dark,
                               ),
                               // CircularProgressIndicator(color: FplTheme.colors.white)
                             ],
