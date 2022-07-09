@@ -54,6 +54,7 @@ class _PredictPageState extends State<PredictPage> {
         //     ],
         //   ),
         // ),
+        SizedBox(height: 12.h),
         FractionallySizedBox(
           widthFactor: 1.0,
           child: Padding(
@@ -71,13 +72,23 @@ class _PredictPageState extends State<PredictPage> {
                         ),
                       ),
                       SizedBox(height: 2.h),
-                      Text(
-                        '$numSelected / 15',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headline2?.copyWith(
-                          color: numSelected < 15
-                            ? FplTheme.colors.red
-                            : FplTheme.colors.green,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ).r,
+                        decoration: BoxDecoration(
+                            color: numSelected < 15
+                              ? FplTheme.colors.red
+                              : FplTheme.colors.green,
+                          borderRadius: BorderRadius.circular(4).r
+                        ),
+                        child: Text(
+                          '$numSelected / 15',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline2?.copyWith(
+                            color: FplTheme.colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -95,13 +106,23 @@ class _PredictPageState extends State<PredictPage> {
                         ),
                       ),
                       SizedBox(height: 2.h),
-                      Text(
-                        money.toStringAsFixed(1),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headline2?.copyWith(
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ).r,
+                        decoration: BoxDecoration(
                           color: money > 0
                             ? FplTheme.colors.green
                             : FplTheme.colors.red,
+                          borderRadius: BorderRadius.circular(4).r,
+                        ),
+                        child: Text(
+                          money.toStringAsFixed(1),
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headline2?.copyWith(
+                            color: FplTheme.colors.white,
+                          ),
                         ),
                       ),
                     ],
