@@ -114,13 +114,6 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
                                           aspectRatio: 1,
                                           child: SizedBox(
                                             height: context.screenHeight,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.white.withOpacity(0.7),
-                                                borderRadius: BorderRadius.circular(8).r,
-                                                // gradient: FplTheme.gradients.greenBlueGradient
-                                              ),
-                                            ),
                                           ),
                                         ),
                                       )
@@ -128,7 +121,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> with TickerProvider
                                         height: context.screenHeight,
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.7),
+                                            color: Colors.white.withOpacity(0.8),
                                             borderRadius: BorderRadius.circular(8).r,
                                             // gradient: FplTheme.gradients.greenBlueGradient
                                           ),

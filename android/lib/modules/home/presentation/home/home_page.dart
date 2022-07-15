@@ -60,7 +60,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   fit: BoxFit.cover,
                 ),
               ),
-            )
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.transparent, FplTheme.colors.white],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                )
+              ),
+            ),
           ],
         ),
         // backgroundColor: FplTheme.colors.dark,

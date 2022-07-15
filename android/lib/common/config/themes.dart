@@ -20,6 +20,7 @@ class FplTheme {
     ),
     appBarTheme: AppBarTheme(
       foregroundColor: FplTheme.colors.dark,
+      elevation: 0,
     ),
     textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(
