@@ -67,8 +67,8 @@ def recommend():
     X, y = split_sequences(scaled_train, n_steps)
     n_features = X.shape[2]
 
-    output_keys = ["id_player", "name", "web_name", "code", "team", "team_id", "position", 
-    "now_cost", "shirt", "actual", "predicted"]
+    output_keys = ["id_player", "name", "web_name", "code", "team", "team_id", "position",
+                   "now_cost", "shirt", "actual", "predicted"]
 
     fav = request.args.get('teams')
     if isinstance(fav, str):
@@ -86,16 +86,16 @@ def recommend():
     )
     results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     for i in range(len(results_starting)):
-        results_starting[i] = dict((key,value) for key, value in results_starting[i].items() if key in output_keys)
-        results_starting[i]["actual_list"] = starting.iloc[i,193:231].tolist()
-        results_starting[i]["predicted_list"] = starting.iloc[i,240:278].tolist()
+        results_starting[i] = dict((key, value) for key, value in results_starting[i].items() if key in output_keys)
+        # results_starting[i]["actual_list"] = starting.iloc[i,193:231].tolist()
+        # results_starting[i]["predicted_list"] = starting.iloc[i,240:278].tolist()
 
     results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     for i in range(len(results_sub)):
-        results_sub[i] = dict((key,value) for key, value in results_sub[i].items() if key in output_keys)
-        results_sub[i]["actual_list"] = sub.iloc[i,193:231].tolist()
-        results_sub[i]["predicted_list"] = sub.iloc[i,240:278].tolist()
-    
+        results_sub[i] = dict((key, value) for key, value in results_sub[i].items() if key in output_keys)
+        # results_sub[i]["actual_list"] = sub.iloc[i, 193:231].tolist()
+        # results_sub[i]["predicted_list"] = sub.iloc[i, 240:278].tolist()
+
     return jsonify({
         "starting": results_starting,
         "sub": results_sub,
@@ -211,20 +211,20 @@ def predict():
     starting = df[df["id_player"].isin(selected2)].copy()
     sub = df[~df["id_player"].isin(starting["id_player"].values)].copy()
 
-    output_keys = ["id_player", "name", "web_name", "code", "team", "team_id", "position", 
-    "now_cost", "shirt", "actual", "predicted"]
+    output_keys = ["id_player", "name", "web_name", "code", "team", "team_id", "position",
+                   "now_cost", "shirt", "actual", "predicted"]
 
     results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     for i in range(len(results_starting)):
-        results_starting[i] = dict((key,value) for key, value in results_starting[i].items() if key in output_keys)
-        results_starting[i]["actual_list"] = starting.iloc[i,193:231].tolist()
-        results_starting[i]["predicted_list"] = starting.iloc[i,240:278].tolist()
+        results_starting[i] = dict((key, value) for key, value in results_starting[i].items() if key in output_keys)
+        results_starting[i]["actual_list"] = starting.iloc[i, 193:231].tolist()
+        results_starting[i]["predicted_list"] = starting.iloc[i, 240:278].tolist()
 
     results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     for i in range(len(results_sub)):
-        results_sub[i] = dict((key,value) for key, value in results_sub[i].items() if key in output_keys)
-        results_sub[i]["actual_list"] = sub.iloc[i,193:231].tolist()
-        results_sub[i]["predicted_list"] = sub.iloc[i,240:278].tolist()
+        results_sub[i] = dict((key, value) for key, value in results_sub[i].items() if key in output_keys)
+        results_sub[i]["actual_list"] = sub.iloc[i, 193:231].tolist()
+        results_sub[i]["predicted_list"] = sub.iloc[i, 240:278].tolist()
     results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     return jsonify({
         "starting": results_starting,
@@ -360,28 +360,29 @@ def selection_summary(dataset):
 def prediction(gw_start, gw_end, n_steps, n_features, season_end, scaler,
                df_scaled_test, df_scaled_all, df_test, df_all, df_master):
     # demonstrate prediction
-    preds_scaled = []
+    # preds_scaled = []
     preds = []
     index_end_2021 = 38 * season_end - 1
 
     for i in range(gw_start - 1, gw_end):
-        x_input = np.array([df_scaled_all[:][index_end_2021 - n_steps + i: index_end_2021 + i] if i == 0 else np.array(
-            preds_scaled[i - 1])])
+        # x_input = np.array([df_all[:][index_end_2021 - n_steps + i: index_end_2021 + i] if i == 0 else np.array(
+        #     preds[i - 1])])
+        x_input = np.array([df_all[:][index_end_2021 - n_steps + i: index_end_2021 + i]])
         x_input = x_input.reshape((1, n_steps, n_features)).astype(np.float32)
         json_response = requests.post(
             "https://fpl-predict.herokuapp.com/v1/models/fpl:predict",
             data=json.dumps({"signature_name": "serving_default", "instances": x_input.tolist()}),
             headers={"content-type": "application/json"})
         yhat = json.loads(json_response.text)['predictions']
-        preds_scaled.append(yhat[0])
-        yhat = inverse_scale(scaler, yhat[0])
-        yhat = inverse_difference(df_all, yhat, len(df_scaled_test) - i)
+        # preds_scaled.append(yhat[0])
+        # yhat = inverse_scale(scaler, yhat)
+        # yhat = inverse_difference(df_all, yhat, len(df_scaled_test) - i)
         preds.append(yhat[0])
 
     preds = np.array(preds)
     preds_t = preds.transpose()
     for i in range(len(preds)):
-        df_master["2021-22 GW" + str(i+1) + " predicted"] = preds[i]
+        df_master["2021-22 GW" + str(i + 1) + " predicted"] = preds[i]
     totals = [sum(p) for p in preds_t]
     df_master["predicted"] = np.round(totals, 3)
 
@@ -443,7 +444,7 @@ def selection(seasons, regex_exc, gw_start, gw_end, df_raw, df_teams, df_master,
         df_in_team = df_new[df_new["id_player"].isin(s)].copy()
         df_in_team = df_in_team[~df_in_team["team_id"].isin(fav_team)]
         s_no_fav = df_in_team["id_player"].tolist()
-        n_len = random.randint(1, len(s_no_fav)-1)
+        n_len = random.randint(1, len(s_no_fav) - 1)
         selected = selected + s_no_fav[:-n_len]
         solutions.append((s, prob.objective.value()))
 
