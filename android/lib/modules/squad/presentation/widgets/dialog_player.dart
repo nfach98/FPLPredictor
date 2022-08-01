@@ -207,7 +207,7 @@ class DialogPlayer extends StatelessWidget {
                                     child: Column(
                                       children: [
                                         Text(
-                                          'Actual',
+                                          'Last season',
                                           style: Theme.of(context).textTheme.bodyText2?.copyWith(
                                             fontWeight: FontWeight.w600,
                                           ),
