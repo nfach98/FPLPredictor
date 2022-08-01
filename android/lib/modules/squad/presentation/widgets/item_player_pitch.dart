@@ -65,7 +65,7 @@ class ItemPlayerPitch extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '${player?.ptsPredicted.toString()} pts',
+                      '${player?.ptsPredicted?.toStringAsFixed(3)} pts',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyText2?.copyWith(
                         color: FplTheme.colors.dark,

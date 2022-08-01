@@ -32,7 +32,7 @@ class PlayerModel {
     code: json['code'],
     cost: json['now_cost'],
     ptsActual: json['actual'],
-    ptsPredicted: json['predicted'],
+    ptsPredicted: json['pred'],
     listActual: json['actual_list'] != null
       ? (json['actual_list'] as List).map((v) => double.parse(v.toString())).toList()
       : null,

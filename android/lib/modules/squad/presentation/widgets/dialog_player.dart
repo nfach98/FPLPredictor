@@ -231,7 +231,7 @@ class DialogPlayer extends StatelessWidget {
                                         ),
                                         SizedBox(height: 4.h),
                                         Text(
-                                          '${player.ptsPredicted} pts',
+                                          '${player.ptsPredicted?.toStringAsFixed(3)} pts',
                                           style: Theme.of(context).textTheme.bodyText2,
                                         ),
                                       ],
