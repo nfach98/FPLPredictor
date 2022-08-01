@@ -72,33 +72,41 @@ class _RecommendPageState extends State<RecommendPage> {
                 );
               }
 
-              return ItemTeam(
-                isSelected: selectedTeams.contains(index),
-                onTap: () {
-                  if (!selectedTeams.contains(index)) {
-                    if (index == 0) {
+              if (index == 0) {
+                return ItemTeam(
+                  isSelected: selectedTeams.contains(index),
+                  onTap: () {
+                    if (!selectedTeams.contains(index)) {
                       context.read<HomeNotifier>().clearTeam();
                       context.read<HomeNotifier>().addTeam(index);
-                    } else {
-                      if (selectedTeams.length == 5) {
-                        ToastContext().init(context);
-                        Toast.show(
-                          'You have already choosen 5 teams',
-                          duration: Toast.lengthShort,
-                          backgroundColor: FplTheme.colors.purple,
-                          textStyle: Theme.of(context).textTheme.bodyText1,
-                          gravity: Toast.bottom,
-                        );
-                      } else {
-                        context.read<HomeNotifier>().removeTeam(0);
-                        context.read<HomeNotifier>().addTeam(index);
-                      }
                     }
-                  } else if (index != 0) {
+                  },
+                  team: teams[index],
+                );
+              }
+
+              return ItemTeam(
+                isSelected: selectedTeams.contains(teams[index].id),
+                onTap: () {
+                  if (!selectedTeams.contains(teams[index].id)) {
+                    if (selectedTeams.length == 5) {
+                      ToastContext().init(context);
+                      Toast.show(
+                        'You have already choosen 5 teams',
+                        duration: Toast.lengthShort,
+                        backgroundColor: FplTheme.colors.purple,
+                        textStyle: Theme.of(context).textTheme.bodyText1,
+                        gravity: Toast.bottom,
+                      );
+                    } else {
+                      context.read<HomeNotifier>().removeTeam(0);
+                      context.read<HomeNotifier>().addTeam(teams[index].id ?? 0);
+                    }
+                  } else {
                     if (selectedTeams.length == 1) {
                       context.read<HomeNotifier>().addTeam(0);
                     }
-                    context.read<HomeNotifier>().removeTeam(index);
+                    context.read<HomeNotifier>().removeTeam(teams[index].id ?? 0);
                   }
                 },
                 team: teams[index],

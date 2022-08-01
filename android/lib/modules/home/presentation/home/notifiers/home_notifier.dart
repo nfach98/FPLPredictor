@@ -79,6 +79,7 @@ class HomeNotifier with ChangeNotifier {
         trivias = [];
         if (r.facts != null) trivias?.addAll(r.facts!);
         if (r.records != null) trivias?.addAll(r.records!);
+        trivias?.shuffle();
       }
     );
 

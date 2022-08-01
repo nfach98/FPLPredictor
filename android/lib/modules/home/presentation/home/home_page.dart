@@ -48,6 +48,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           children: [
             Container(
               decoration: BoxDecoration(
+                  gradient: FplTheme.gradients.blueLavenderGradient
+              ),
+            ),
+            FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                alignment: Alignment.centerRight,
+                child: Image.asset(
+                  'assets/images/bg_fpl_new_half.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.transparent, FplTheme.colors.white],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  )
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: RecommendPage(),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'caretaker',
+          style: Theme.of(context).textTheme.headline1,
+        ),
+        flexibleSpace: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
                 gradient: FplTheme.gradients.blueLavenderGradient
               ),
             ),

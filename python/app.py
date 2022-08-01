@@ -131,7 +131,10 @@ def recommend():
     up_df['pred'] = list_pred
     df = up_df.copy()
     df['name'] = df.apply (lambda row: row['first_name'] + ' ' + row['second_name'], axis=1)
-    teams = set(df['team'].values)
+
+    teams = pd.read_csv('datasets/master_team_list.csv')
+    teams_ids = teams['team']
+    # teams_name = set(df['team'].values)
        
     fav = request.args.get('teams')
     if isinstance(fav, str):
@@ -152,7 +155,7 @@ def recommend():
         ids = list(df_new["code"])
         costs = list(df_new["now_cost"])
 
-        constraint_team = [[1 if df_new.iloc[i]['team'] == t else 0 for i in range(len(pts))] for t in teams]
+        constraint_team = [[1 if df_new.iloc[i]['team_code'] == t else 0 for i in range(len(pts))] for t in teams_ids]
         pos_gk = [1 if df_new.iloc[i]['position'] == "GKP" else 0 for i in range(len(pts))]
         pos_def = [1 if df_new.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts))]
         pos_mid = [1 if df_new.iloc[i]['position'] == "MID" else 0 for i in range(len(pts))]
@@ -166,11 +169,13 @@ def recommend():
         prob += pulp.lpSum([pos_def[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalDef"
         prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
         prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
-        for index, c in enumerate(constraint_team):
-            if index not in fav:
-                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
-            else:
-                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
+        for t in range(20):
+            prob += pulp.lpSum([constraint_team[t][i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(t)
+        # for index, c in enumerate(constraint_team):
+        #     if index not in fav:
+        #         prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
+        #     else:
+        #         prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
         
         prob.solve()
         s = [int(var.name) for var in prob.variables() if var.value() == 1]
@@ -361,7 +366,6 @@ def trivias():
 @app.route('/teams')
 def teams():
     teams = pd.read_csv('datasets/master_team_list.csv')
-    teams = teams[teams['season'] == '2021-22']
     result_teams = teams.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
     return jsonify({
         "teams": result_teams
