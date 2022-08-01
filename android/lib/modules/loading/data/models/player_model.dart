@@ -53,7 +53,7 @@ class PlayerModel {
     map['code'] = code;
     map['now_cost'] = cost;
     map['actual'] = ptsActual;
-    map['predicted'] = ptsPredicted;
+    map['pred'] = ptsPredicted;
     map['actual_list'] = listActual?.map((v) => v).toList();
     map['predicted_list'] = listPredicted?.map((v) => v).toList();
     return map;

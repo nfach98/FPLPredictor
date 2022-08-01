@@ -87,7 +87,7 @@ class ItemPlayerSearch extends StatelessWidget {
     if(code == null || pos == null) {
       return 'https://brandlogos.net/wp-content/uploads/2021/10/premier-league-logo.png';
     } else {
-      return pos == 'GK'
+      return pos == 'GKP'
           ? 'https://fantasy.premierleague.com/dist/img/shirts/standard/${code}_1-66.png'
           : 'https://fantasy.premierleague.com/dist/img/shirts/standard/$code-66.png';
     }

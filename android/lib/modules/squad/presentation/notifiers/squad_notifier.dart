@@ -22,7 +22,7 @@ class SquadNotifier extends ChangeNotifier {
     starting = [];
     starting?.addAll(value);
 
-    startGk = value.where((element) => element.position == 'GK').toList();
+    startGk = value.where((element) => element.position == 'GKP').toList();
     startDef = value.where((element) => element.position == 'DEF').toList();
     startMid = value.where((element) => element.position == 'MID').toList();
     startFwd = value.where((element) => element.position == 'FWD').toList();
@@ -37,7 +37,7 @@ class SquadNotifier extends ChangeNotifier {
 
   setSub(List<PlayerEntity> value) {
     sub = [];
-    sub?.addAll(value.where((e) => e.position == 'GK').toList());
+    sub?.addAll(value.where((e) => e.position == 'GKP').toList());
     sub?.addAll(value.where((e) => e.position == 'DEF').toList());
     sub?.addAll(value.where((e) => e.position == 'MID').toList());
     sub?.addAll(value.where((e) => e.position == 'FWD').toList());

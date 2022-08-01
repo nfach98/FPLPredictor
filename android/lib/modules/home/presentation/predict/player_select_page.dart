@@ -293,7 +293,7 @@ class _PlayerSelectPageState extends State<PlayerSelectPage> {
 
   _buildLabelPosition() {
     switch(widget.argument.position) {
-      case 'GK' :
+      case 'GKP' :
         return Container(
           padding: const EdgeInsets.symmetric(
             horizontal: 12,

@@ -256,7 +256,7 @@ class _SquadPageState extends State<SquadPage> {
                                             SizedBox(height: 4.h),
                                             Text(
                                               notifier.sub?.indexOf(e) == 0
-                                                ? 'GK' : notifier.sub?.indexOf(e).toString() ?? '',
+                                                ? 'GKP' : notifier.sub?.indexOf(e).toString() ?? '',
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context).textTheme.bodyText2?.copyWith(
                                                 fontSize: 10.sp,

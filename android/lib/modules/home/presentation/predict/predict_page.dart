@@ -163,7 +163,7 @@ class _PredictPageState extends State<PredictPage> {
                           children: [
                             RowPosition(
                               players: selected.sublist(0, 2),
-                              position: 'GK',
+                              position: 'GKP',
                             ),
                             RowPosition(
                               players: selected.sublist(2, 7),
@@ -208,7 +208,7 @@ class _PredictPageState extends State<PredictPage> {
               //               children: [
               //                 RowPosition(
               //                   players: selected.sublist(0, 2),
-              //                   position: 'GK',
+              //                   position: 'GKP',
               //                 ),
               //                 RowPosition(
               //                   players: selected.sublist(2, 7),

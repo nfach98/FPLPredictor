@@ -83,11 +83,11 @@ class ItemPlayerPitch extends StatelessWidget {
 
   String getShirt(String? code, String? pos) {
     if (code == null || pos == null) {
-      return pos == 'GK'
+      return pos == 'GKP'
           ? 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0_1-66.png'
           : 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0-66.png';
     } else {
-      return pos == 'GK'
+      return pos == 'GKP'
           ? 'https://fantasy.premierleague.com/dist/img/shirts/standard/${code}_1-66.png'
           : 'https://fantasy.premierleague.com/dist/img/shirts/standard/$code-66.png';
     }

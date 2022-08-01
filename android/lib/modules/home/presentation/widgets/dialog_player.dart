@@ -248,7 +248,7 @@ class DialogPlayer extends StatelessWidget {
 
   Widget getPosition(BuildContext context, String position) {
     switch(position) {
-      case 'GK':
+      case 'GKP':
         return Container(
           color: FplTheme.colors.dark,
           child: Text(

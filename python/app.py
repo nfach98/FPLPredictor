@@ -6,6 +6,8 @@ import json
 import pulp
 import random
 import requests
+import json
+import re
 from unidecode import unidecode
 from flask import Flask, jsonify, request
 from sklearn.metrics import mean_squared_error
@@ -22,84 +24,193 @@ def recommend():
     scaler = MinMaxScaler(feature_range=(0, 1))
     regex_exc = "loan|transfer|join|left|contract|retire"
 
-    df_aggregated = pd.read_csv('datasets/aggregated.csv')
-    df_raw = pd.read_csv('datasets/player_raw.csv')
+    df_aggregated = pd.read_csv(r'https://raw.githubusercontent.com/nfach98/FPLPredictor/main/python/datasets/aggregated.csv')
+    df_raw = pd.read_csv(r'https://raw.githubusercontent.com/nfach98/FPLPredictor/main/player_raw.csv')
 
+    df_aggregated.loc[df_aggregated['team'] == 'Leeds', 'shirt'] = 'shirt_2'
+    df_aggregated.loc[df_aggregated['team'] == 'Leicester', 'shirt'] = 'shirt_13'
+
+    valids = []
+    df = df_raw[(df_raw["season"] == seasons[-1]) & (df_raw['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False)]
     valids = df_aggregated['id_player'].values.tolist()
-    valids.sort()
 
-    df_teams = pd.read_csv('datasets/master_team_list.csv')
-    df_teams = df_teams[df_teams['season'] == '2021-22']
+    master = df_aggregated[df_aggregated['id_player'].isin(valids)].copy()
+    master = master.sort_values(by="id_player")
+    master = master.fillna(0)
+    master = master.iloc[:, 3:231]
 
-    df_master = df_aggregated[df_aggregated['id_player'].isin(valids)].copy()
-    df_master = df_master.sort_values(by="id_player")
-    df_master = df_master.fillna(0)
-    df_master["actual"] = df_master.iloc[:, 193:231].sum(axis=1, numeric_only=True)
-    # master.rename(columns={0: 'id_player', 1: 'name', 230: 'team', 231: 'position'}, inplace=True)
+    selected = master
+    seq = [np.array(selected.iloc[i]).reshape((len(selected.iloc[i]), 1)) for i in range(len(selected))]
+    dataset = np.hstack(tuple(seq))
 
-    # define input sequence
-    season_start = 0
-    season_end = 5
-    col_shift = 3
-    col_start = 38 * season_start + col_shift  # 2016-17
-    col_end = 38 * (season_end + 1) + col_shift  # 2021-22
-    gw_start = 1
-    gw_end = 38
-
-    data_train = []
-    data_test = []
-    data_all = []
-    for i, row in df_master.iterrows():
-        data_train.append(row[col_start: (col_end - 38)].values.reshape(38 * season_end, 1))
-        data_test.append(row[(col_end - 38): col_end].values.reshape(38, 1))
-        data_all.append(row[col_start: col_end].values.reshape(38 * (season_end - season_start + 1), 1))
-
-    # horizontally stack columns
-    df_train = np.hstack(tuple(data_train))
-    df_test = np.hstack(tuple(data_test))
-    df_all = np.hstack(tuple(data_all))
-
-    scaled_train = scale(scaler, df_train)
-    scaled_test = scale(scaler, df_test)
-    scaled_all = scale(scaler, df_all)
-
+    # choose a number of time steps
     n_steps = 1
-    X, y = split_sequences(scaled_train, n_steps)
+    slice_point = 190-n_steps
+
+    # convert into input/output
+    X_ori, y_ori = split_sequences(dataset, n_steps)
+    X, y = split_sequences(scale(scaler, dataset), n_steps)
+    # X_train, y_train = X[:slice_point], y[:slice_point]
+    X_train, y_train = X, y
+    X_test, y_test = X[slice_point:], y[slice_point:]
+    # the dataset knows the number of features, e.g. 2
     n_features = X.shape[2]
 
-    output_keys = ["id_player", "name", "web_name", "code", "team", "team_id", "position",
-                   "now_cost", "shirt", "actual", "predicted"]
+    pred_scale = []
+    pred = []
+    for i in range(38):
+        x_input = X_test[-1] if i == 0 else pred_scale[i-1]
+        x_input = np.array(x_input).reshape((1, n_steps, n_features))
+        json_response = requests.post(
+            "https://fpl-predict.herokuapp.com/v1/models/fpl:predict",
+            data=json.dumps({"signature_name": "serving_default", "instances": x_input.tolist()}),
+            headers={"content-type": "application/json"})
+        yhat = json.loads(json_response.text)['predictions']
+        pred_scale.append(yhat[0])
+        yhat = inverse_scale(scaler, yhat)
+        pred.append(yhat[0])
+    
+    x = requests.get('https://fantasy.premierleague.com/api/bootstrap-static/')
+    x_data = json.loads(x.content)
+    pos_data = x_data['element_types']
+    team_data = x_data['teams']
 
+    valids = []
+    for x in x_data['elements']:
+        if bool(re.search(regex_exc, x['news'])) == False:
+            valids.append(x['code'])
+
+    up_df = pd.DataFrame(x_data['elements'])
+    up_df = up_df[['code','web_name','first_name','second_name','news','now_cost','team_code','element_type']]
+    up_df = up_df[up_df['news'].str.contains(regex_exc, regex=True, case=False, na=False) == False]
+
+    teams = []
+    shirts = []
+    for tc in up_df['team_code']:
+        for t in team_data:
+            if t['code'] == tc:
+                teams.append(t['name'])
+                shirts.append('shirt_' + str(tc))
+
+    positions = []
+    for t in up_df['element_type']:
+        for p in pos_data:
+            if p['id'] == t:
+                positions.append(p['singular_name_short'])
+
+    up_df['team'] = teams
+    up_df['shirt'] = shirts
+    up_df['position'] = positions
+    up_df['now_cost'] = up_df['now_cost']/10
+    up_df = up_df[['code','web_name','first_name','second_name','now_cost','team','team_code','position','shirt']]
+
+    list_actual = []
+    list_pred = []
+    pred_t = np.array(pred).transpose()
+    for i in range(len(master)):
+        list_actual.append(sum(master.iloc[i, 189:227]))
+        list_pred.append(float('{:f}'.format(sum(pred_t[i]))))
+
+    df = df_aggregated.copy()
+    df['actual'] = list_actual
+    df['pred'] = list_pred
+
+    list_actual = []
+    list_pred = []
+    for p in up_df['code']:
+        actual = df[df['code'] == p]['actual'].values
+        pred = df[df['code'] == p]['pred'].values
+        if len(actual) > 0 and len(pred) > 0:
+            list_actual.append(actual[0])
+            list_pred.append(pred[0])
+        else:
+            list_actual.append(0)
+            list_pred.append(0)
+
+    up_df['actual'] = list_actual
+    up_df['pred'] = list_pred
+    df = up_df.copy()
+    df['name'] = df.apply (lambda row: row['first_name'] + ' ' + row['second_name'], axis=1)
+    teams = set(df['team'].values)
+       
     fav = request.args.get('teams')
     if isinstance(fav, str):
         fav = fav.split(',')
         fav = list(map(int, fav))
+    else:
+        fav = []
 
-    prediction(
-        gw_start=gw_start, gw_end=gw_end,
-        n_steps=n_steps, n_features=n_features, season_end=season_end, scaler=scaler,
-        df_scaled_test=scaled_test, df_scaled_all=scaled_all, df_test=df_test, df_all=df_all, df_master=df_master
-    )
-    starting, sub = selection(
-        seasons=seasons, gw_start=gw_start, gw_end=gw_end, regex_exc=regex_exc,
-        df_teams=df_teams, df_raw=df_raw, df_master=df_master, col_shift=col_shift, fav_team=fav
-    )
-    results_starting = starting.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
-    for i in range(len(results_starting)):
-        results_starting[i] = dict((key, value) for key, value in results_starting[i].items() if key in output_keys)
-        # results_starting[i]["actual_list"] = starting.iloc[i,193:231].tolist()
-        # results_starting[i]["predicted_list"] = starting.iloc[i,240:278].tolist()
+    solutions = []
+    selected = []
 
-    results_sub = sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist()
-    for i in range(len(results_sub)):
-        results_sub[i] = dict((key, value) for key, value in results_sub[i].items() if key in output_keys)
-        # results_sub[i]["actual_list"] = sub.iloc[i, 193:231].tolist()
-        # results_sub[i]["predicted_list"] = sub.iloc[i, 240:278].tolist()
+    #selection 10 different recommendations
+    for i in range(1, 10):
+        df_new = df[~df["code"].isin(selected)].copy()
+
+        prob = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
+        pts = list(df_new["pred"])
+        ids = list(df_new["code"])
+        costs = list(df_new["now_cost"])
+
+        constraint_team = [[1 if df_new.iloc[i]['team'] == t else 0 for i in range(len(pts))] for t in teams]
+        pos_gk = [1 if df_new.iloc[i]['position'] == "GKP" else 0 for i in range(len(pts))]
+        pos_def = [1 if df_new.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts))]
+        pos_mid = [1 if df_new.iloc[i]['position'] == "MID" else 0 for i in range(len(pts))]
+        pos_fwd = [1 if df_new.iloc[i]['position'] == "FWD" else 0 for i in range(len(pts))]
+
+        pts_vars = [pulp.LpVariable(str(i), lowBound = 0, upBound = 1, cat='Binary') for i in ids]
+        prob += pulp.lpSum([pts[i] * pts_vars[i] for i in range(len(pts))])
+        prob += pulp.lpSum([costs[i] * pts_vars[i] for i in range(len(pts))]) <= 100, "TotalCost"
+        prob += pulp.lpSum([pts_vars[i] for i in range(len(pts))]) == 15, "TotalPlayer"
+        prob += pulp.lpSum([pos_gk[i] * pts_vars[i] for i in range(len(pts))]) == 2, "TotalGk"
+        prob += pulp.lpSum([pos_def[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalDef"
+        prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
+        prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
+        for index, c in enumerate(constraint_team):
+            if index not in fav:
+                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
+            else:
+                prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(index)
+        
+        prob.solve()
+        s = [int(var.name) for var in prob.variables() if var.value() == 1]
+        lg = random.randint(1, 11)
+        selected = selected + s[:-lg]
+        solutions.append((s, prob.objective.value()))
+    
+    id_solution = random.randint(0, len(solutions) - 1)
+    players = df[df["code"].isin(solutions[id_solution][0])].copy()
+    players = players[["code", "name", "web_name", "team", "position", "now_cost", "shirt", "actual", "pred"]]
+
+    #split to starting and sub
+    prob2 = pulp.LpProblem('MaxPoints', pulp.LpMaximize)
+    pts2 = list(players["pred"])
+    ids2 = list(players["code"])
+
+    pos_gk = [1 if players.iloc[i]['position'] == "GKP" else 0 for i in range(len(pts2))]
+    pos_def = [1 if players.iloc[i]['position'] == "DEF" else 0 for i in range(len(pts2))]
+    pos_mid = [1 if players.iloc[i]['position'] == "MID" else 0 for i in range(len(pts2))]
+    pos_fwd = [1 if players.iloc[i]['position'] == "FWD" else 0 for i in range(len(pts2))]
+
+    pts_vars2 = [pulp.LpVariable(str(i), lowBound = 0, upBound = 1, cat='Binary') for i in ids2]
+    prob2 += pulp.lpSum([pts2[i] * pts_vars2[i] for i in range(len(pts2))])
+    prob2 += pulp.lpSum([pts_vars2[i] for i in range(len(pts2))]) == 11, "TotalPlayer"
+    prob2 += pulp.lpSum([pos_gk[i] * pts_vars2[i] for i in range(len(pts2))]) == 1, "TotalGk"
+    prob2 += pulp.lpSum([pos_def[i] * pts_vars2[i] for i in range(len(pts2))]) >= 3, "TotalDef"
+    prob2 += pulp.lpSum([pos_mid[i] * pts_vars2[i] for i in range(len(pts2))]) >= 1, "TotalMid"
+    prob2 += pulp.lpSum([pos_fwd[i] * pts_vars2[i] for i in range(len(pts2))]) >= 1, "TotalFwd"
+    prob2.solve()
+
+    selected2 = [int(var.name) for var in prob2.variables() if var.value() == 1]
+    starting = df[df["code"].isin(selected2)].copy()
+    starting = starting[["code", "name", "web_name", "team", "position", "now_cost", "shirt", "actual", "pred"]]
+    
+    sub = players[~players["code"].isin(starting["code"].values)].copy()
 
     return jsonify({
-        "starting": results_starting,
-        "sub": results_sub,
-        "total_predicted": sum(starting['predicted'].values),
+        "starting": starting.apply(lambda x: json.loads(x.to_json()), axis=1).tolist(),
+        "sub": sub.apply(lambda x: json.loads(x.to_json()), axis=1).tolist(),
+        "total_predicted": sum(starting['pred'])
     })
 
 

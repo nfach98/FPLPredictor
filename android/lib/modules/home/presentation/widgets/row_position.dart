@@ -107,7 +107,7 @@ class RowPosition extends StatelessWidget {
 
   int getStartingIndexSelected() {
     switch(position) {
-      case 'GK' : return 0;
+      case 'GKP' : return 0;
       case 'DEF' : return 2;
       case 'MID' : return 7;
       default : return 12;
