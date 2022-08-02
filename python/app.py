@@ -169,8 +169,14 @@ def recommend():
         prob += pulp.lpSum([pos_def[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalDef"
         prob += pulp.lpSum([pos_mid[i] * pts_vars[i] for i in range(len(pts))]) == 5, "TotalMid"
         prob += pulp.lpSum([pos_fwd[i] * pts_vars[i] for i in range(len(pts))]) == 3, "TotalFwd"
-        for t in range(20):
-            prob += pulp.lpSum([constraint_team[t][i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(t)
+        for index, t in enumerate(teams_ids):
+            if t in fav:
+                prob += pulp.lpSum([constraint_team[index][i] * pts_vars[i] for i in range(len(pts))]) == 3, "MaxTeam_" + str(t)
+            else:
+                prob += pulp.lpSum([constraint_team[index][i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(t)
+        # for t in range(20):
+        #     prob += pulp.lpSum([constraint_team[t][i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(t)
+        
         # for index, c in enumerate(constraint_team):
         #     if index not in fav:
         #         prob += pulp.lpSum([c[i] * pts_vars[i] for i in range(len(pts))]) <= 3, "MaxTeam_" + str(index)
