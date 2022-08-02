@@ -47,7 +47,6 @@ class SquadTab extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: FplTheme.colors.gray,
-          borderRadius: BorderRadius.circular(4).r,
         ),
         padding: const EdgeInsets.all(12).r,
         child: Text(
