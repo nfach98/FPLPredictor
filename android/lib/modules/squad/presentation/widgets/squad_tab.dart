@@ -17,11 +17,36 @@ class SquadTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isSelected) {
+      return InkWell(
+        onTap: onTap,
+        child: Material(
+          elevation: 4.0,
+          borderRadius: BorderRadius.circular(4).r,
+          child: Container(
+            decoration: BoxDecoration(
+              color: FplTheme.colors.white,
+              borderRadius: BorderRadius.circular(4).r,
+            ),
+            padding: const EdgeInsets.all(12).r,
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline3?.copyWith(
+                fontSize: 12.sp,
+                color: FplTheme.colors.dark,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return InkWell(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected ? FplTheme.colors.white : FplTheme.colors.purple,
+          color: FplTheme.colors.gray,
           borderRadius: BorderRadius.circular(4).r,
         ),
         padding: const EdgeInsets.all(12).r,
@@ -30,8 +55,7 @@ class SquadTab extends StatelessWidget {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headline3?.copyWith(
             fontSize: 12.sp,
-            color: isSelected
-              ? FplTheme.colors.dark : FplTheme.colors.white,
+            color: FplTheme.colors.dark,
           ),
         ),
       ),

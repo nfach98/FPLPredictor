@@ -142,7 +142,7 @@ class _SquadPageState extends State<SquadPage> {
                     padding: const EdgeInsets.all(2).r,
                     margin: const EdgeInsets.all(12).r,
                     decoration: BoxDecoration(
-                      color: FplTheme.colors.purple,
+                      color: FplTheme.colors.white,
                       borderRadius: BorderRadius.circular(4).r,
                     ),
                     child: Row(
