@@ -1,23 +1,13 @@
-FROM python:3.8.0
+FROM tensorflow/serving
 
-# Maintainer info
-LABEL maintainer="nfach98@gmail.com"
+ENV MODEL_BASE_PATH /models
+ENV MODEL_NAME fpl
 
-# Make working directories
-RUN  mkdir -p  /fpl-api
-WORKDIR  /fpl-api
+COPY models/fpl models/fpl
 
-# Upgrade pip with no cache
-RUN pip install --no-cache-dir -U pip
-
-# Copy application requirements file to the created working directory
-COPY requirements.txt .
-
-# Install application dependencies from the requirements file
-RUN pip install -r requirements.txt
-
-# Copy every file in the source folder to the created working directory
-COPY  . .
-
-# Run the python application
-CMD ["./wsgi_entrypoint.sh"]
+# Fix because base tf_serving_entrypoint.sh does not take $PORT env variable while $PORT is set by Heroku
+# CMD is required to run on Heroku
+COPY tf_serving_entrypoint.sh /usr/bin/tf_serving_entrypoint.sh
+RUN chmod +x /usr/bin/tf_serving_entrypoint.sh
+ENTRYPOINT []
+CMD ["/usr/bin/tf_serving_entrypoint.sh"]

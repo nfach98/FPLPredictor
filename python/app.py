@@ -58,8 +58,8 @@ def recommend():
 
     pred_scale = []
     pred = []
-    for i in range(38):
-        x_input = X_test[-1] if i == 0 else pred_scale[i-1]
+    for i in range(76):
+        x_input = X_test[i-38] if i < 38 else pred_scale[i-1]
         x_input = np.array(x_input).reshape((1, n_steps, n_features))
         json_response = requests.post(
             "https://fpl-predict.herokuapp.com/v1/models/fpl:predict",
@@ -108,7 +108,7 @@ def recommend():
     list_pred = []
     pred_t = np.array(pred).transpose()
     for i in range(len(master)):
-        list_actual.append(sum(master.iloc[i, 189:227]))
+        list_actual.append(sum(master.iloc[i, -38:]))
         list_pred.append(float('{:f}'.format(sum(pred_t[i]))))
 
     df = df_aggregated.copy()
